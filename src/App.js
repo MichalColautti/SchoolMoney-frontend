@@ -1,11 +1,8 @@
-import './App.css';
+import "./App.css";
+import AuthTabs from "./components/auth/AuthTabs";
 
-function App() {
-  return (
-    <div>
-      <h1>Hello</h1>
-    </div>
-  );
+const App = () => {
+  return <AuthTabs />;
 }
 
 export default App;
