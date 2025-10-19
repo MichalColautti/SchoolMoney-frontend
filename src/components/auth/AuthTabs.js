@@ -52,13 +52,13 @@ const styles = {
     background: "#fff",
   },
   box: {
-    border: "2px solid #f0f9ff",
+    border: "4px solid #f0f9ff",
     borderRadius: "15px",
     padding: "1rem",
     textAlign: "center",
     background: "#fff",
     width: "350px",
-    boxShadow: "0 0 5px #f0f9ff",
+    boxShadow: "0 0 8px #f0f9ff",
   },
   title: {
     color: "#2B7FFF",
@@ -73,7 +73,6 @@ const styles = {
     background: "#f0f9ff",
     padding: "6px",
     borderRadius: "20px",
-    marginBottom: "15px",
   },
   tabButton: {
     flex: 1,
