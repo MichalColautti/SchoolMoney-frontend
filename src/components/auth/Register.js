@@ -12,7 +12,12 @@ const Register = () => {
   //handle register logic
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Register submitted:", { firstName, lastName, email, password });
+    console.log("Register submitted:", {
+      firstName,
+      lastName,
+      email,
+      password,
+    });
   };
 
   return (

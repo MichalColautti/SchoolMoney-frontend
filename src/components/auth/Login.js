@@ -15,40 +15,42 @@ const Login = () => {
 
   return (
     console.log("Login component rendered"),
-    <form style={styles.container} onSubmit={handleSubmit}>
-      <label style={styles.text}>Email</label>
-      <input
-        style={styles.input}
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <label style={styles.text}>Hasło</label>
-      <div style={styles.passwordContainer}>
+    (
+      <form style={styles.container} onSubmit={handleSubmit}>
+        <label style={styles.text}>Email</label>
         <input
           style={styles.input}
-          type={showPassword ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <button
-          type="button"
-          style={styles.showPasswordButton}
-          onClick={() => setShowPassword((prev) => !showPassword)}
-        >
-          <img
-            src={showPassword ? hidePasswordIcon : showPasswordIcon}
-            style={styles.icon}
-            alt={showPassword ? "ukryj" : "pokaż"}
-        />
+        <label style={styles.text}>Hasło</label>
+        <div style={styles.passwordContainer}>
+          <input
+            style={styles.input}
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            type="button"
+            style={styles.showPasswordButton}
+            onClick={() => setShowPassword((prev) => !showPassword)}
+          >
+            <img
+              src={showPassword ? hidePasswordIcon : showPasswordIcon}
+              style={styles.icon}
+              alt={showPassword ? "ukryj" : "pokaż"}
+            />
+          </button>
+        </div>
+        <button type="submit" style={styles.submitButton}>
+          Zaloguj się
         </button>
-      </div>
-      <button type="submit" style={styles.submitButton}>
-        Zaloguj się
-      </button>
-    </form>
+      </form>
+    )
   );
 };
 
