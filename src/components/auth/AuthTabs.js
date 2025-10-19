@@ -50,6 +50,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     background: "#fff",
+    fontFamily: "'Krub', sans-serif",
   },
   box: {
     border: "4px solid #f0f9ff",
