@@ -61,7 +61,7 @@ const styles = {
   text: {
     fontSize: "16px",
     marginLeft: "2px",
-    marginTop: "8px",
+    marginTop: "12px",
     textAlign: "left",
   },
   input: {
@@ -69,7 +69,7 @@ const styles = {
     background: "#f0f9ff",
     borderRadius: "8px",
     padding: "10px",
-    margin: "8px 0 16px 0",
+    margin: "2px 0 0 0",
     fontSize: "16px",
     width: "100%",
     boxSizing: "border-box",
@@ -81,7 +81,7 @@ const styles = {
   showPasswordButton: {
     position: "absolute",
     right: "12px",
-    top: "47%",
+    top: "57%",
     transform: "translateY(-50%)",
     background: "transparent",
     border: "none",
@@ -96,7 +96,7 @@ const styles = {
     padding: "10px",
     fontSize: "16px",
     cursor: "pointer",
-    marginTop: "10px",
+    marginTop: "20px",
   },
   error: {
     color: "red",
