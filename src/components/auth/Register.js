@@ -8,16 +8,24 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [repeatPassword, setRepeatPassword] = useState("");
+  const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
   //handle register logic
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Register submitted:", {
+    if (password !== repeatPassword) {
+      alert("Hasła nie są zgodne!");
+      return;
+    }
+    else {
+      console.log("Register submitted:", {
       firstName,
       lastName,
       email,
       password,
     });
+    }
   };
 
   return (
@@ -74,6 +82,30 @@ const Register = () => {
           />
         </button>
       </div>
+
+      <label style={styles.text}>Powtórz hasło</label>
+      <div style={styles.passwordContainer}>
+        <input
+          style={styles.input}
+          type={showRepeatPassword ? "text" : "password"}
+          value={repeatPassword}
+          onChange={(e) => setRepeatPassword(e.target.value)}
+          required
+          autoComplete="new-password"
+        />
+        <button
+          type="button"
+          style={styles.showPasswordButton}
+          onClick={() => setShowRepeatPassword((prev) => !prev)}
+        >
+          <img
+            src={showRepeatPassword ? hidePasswordIcon : showPasswordIcon}
+            style={styles.icon}
+            alt={showRepeatPassword ? "ukryj" : "pokaż"}
+          />
+        </button>
+      </div>
+    
       <button type="submit" style={styles.submitButton}>
         Zarejestruj się
       </button>
