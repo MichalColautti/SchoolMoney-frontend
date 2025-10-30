@@ -1,34 +1,39 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
-const TopBar = () => (
-  <div style={styles.container}>
-    <div style={styles.navigation}>
-      <NavLink
-        to="/parent"
-        style={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
-      >
-        Panel Rodzica
-      </NavLink>
-      <NavLink
-        to="/treasurer"
-        style={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
-      >
-        Panel Skarbnika
-      </NavLink>
-      <NavLink
-        to="/account"
-        style={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
-      >
-        Konto
-      </NavLink>
+const Header = () => {
+  const { logout } = useAuth();
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.navigation}>
+        <NavLink
+          to="/parent"
+          style={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
+        >
+          Panel Rodzica
+        </NavLink>
+        <NavLink
+          to="/treasurer"
+          style={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
+        >
+          Panel Skarbnika
+        </NavLink>
+        <NavLink
+          to="/account"
+          style={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
+        >
+          Konto
+        </NavLink>
+      </div>
+      <div style={styles.right}>
+        <button style={styles.button}>Czat</button>
+        <button style={styles.button}>432,32</button>
+        <button style={styles.button} onClick={logout}>Wyloguj</button>
+      </div>
     </div>
-    <div style={styles.right}>
-      <button style={styles.button}>Czat</button>
-      <button style={styles.button}>432,32</button>
-      <button style={styles.button}>Wyloguj</button>
-    </div>
-  </div>
-);
+  );
+};
 
 const styles = {
   container: {
@@ -76,4 +81,4 @@ const styles = {
   },
 };
 
-export default TopBar;
+export default Header;
