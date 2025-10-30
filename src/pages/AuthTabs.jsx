@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Login from "./Login";
-import Register from "./Register";
-import Reset from "./Reset";
+import Login from "../components/auth/Login";
+import Register from "../components/auth/Register";
+import Reset from "../components/auth/Reset";
 
 const AuthTabs = () => {
   const [tab, setTab] = useState("login");

@@ -1,16 +1,23 @@
 import { useState } from "react";
 import showPasswordIcon from "../../assets/showPasswordIcon.svg";
 import hidePasswordIcon from "../../assets/hidePasswordIcon.svg";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   //handle login logic
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Login submitted:", { email, password });
+    login();
+    navigate("/parent");
   };
 
   return (

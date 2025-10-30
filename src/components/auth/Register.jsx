@@ -1,6 +1,8 @@
 import { useState } from "react";
 import showPasswordIcon from "../../assets/showPasswordIcon.svg";
 import hidePasswordIcon from "../../assets/hidePasswordIcon.svg";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -11,6 +13,9 @@ const Register = () => {
   const [repeatPassword, setRepeatPassword] = useState("");
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
+  const navigate = useNavigate();
+  const { register } = useAuth();
+
   //handle register logic
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,11 +25,13 @@ const Register = () => {
     }
     else {
       console.log("Register submitted:", {
-      firstName,
-      lastName,
-      email,
-      password,
-    });
+        firstName,
+        lastName,
+        email,
+        password,
+      }); 
+      register();
+      navigate("/parent");
     }
   };
 
