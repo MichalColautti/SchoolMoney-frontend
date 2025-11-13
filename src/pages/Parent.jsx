@@ -1,6 +1,53 @@
 import Header from "../components/Header";
 import Panel from "../components/Panel";
-import ChildrenTable from "../components/ChildrenTable";
+import ChildrenTab from "../components/ChildrenTab";
+import ClassesTab from "../components/ClassesTab";
+import { useState } from "react";
+
+const classesData = [
+  {
+    id: "c1",
+    name: "Klasa 4C",
+    year: "2024/2025",
+    accessCode: "qwem,qwemqw,eqmw,ewqqweqnjweqwk",
+    fundraisers: [
+      {
+        id: "f1",
+        name: "Wyjazd w góry",
+        userPaymentStatus: "paid", 
+        fundraiserStatus: "unactive", 
+      },
+    ],
+    students: [
+      { id: "s1", name: "Jan Kowalski" },
+      { id: "s2", name: "Jan Kowalski" },
+      { id: "s3", name: "Jan Kowalski" },
+      { id: "s4", name: "Jan Kowalski" },
+      { id: "s5", name: "Jan Kowalski" },
+      { id: "s6", name: "Jan Kowalski" },
+      { id: "s7", name: "Jan Kowalski" },
+      { id: "s8", name: "Jan Kowalski" },
+    ],
+  },
+  {
+    id: "c2",
+    name: "Klasa 1A",
+    year: "2023/2024",
+    accessCode: "asdasdmksaaksdasmd",
+    fundraisers: [
+      {
+        id: "f2",
+        name: "Wyjście do kina",
+        userPaymentStatus: "unpaid",
+        fundraiserStatus: "active",
+      },
+    ],
+    students: [
+      { id: "s9", name: "Zofia Nowak" },
+      { id: "s10", name: "Maciej Kowalski" },
+    ],
+  },
+];
 
 const kidsData = [
   {
@@ -18,6 +65,8 @@ const kidsData = [
 ];
 
 const Parent = () => {
+  const [activeTab, setActiveTab] = useState("children");
+
   return (
     <>
       <Header balance={432.32} />
@@ -31,15 +80,18 @@ const Parent = () => {
 
         {/* Nav */}
         <nav style={styles.nav}>
-          <span style={styles.navTabActive}>Dzieci</span>
-          <span style={styles.navTab}>Klasy</span>
-          <span style={styles.navTab}>Zbiórki</span>
-          <span style={styles.navTab}>Transakcje</span>
-          <span style={styles.navTab}>Rachunkowość</span>
+          <span style={activeTab === "children" ? styles.navTabActive : styles.navTab} onClick={() => setActiveTab("children")}>Dzieci</span>
+          <span style={activeTab === "classes" ? styles.navTabActive : styles.navTab} onClick={() => setActiveTab("classes")}>Klasy</span>
+          <span style={activeTab === "fundraisers" ? styles.navTabActive : styles.navTab} onClick={() => setActiveTab("fundraisers")}>Zbiórki</span>
+          <span style={activeTab === "transactions" ? styles.navTabActive : styles.navTab} onClick={() => setActiveTab("transactions")}>Transakcje</span>
+          <span style={activeTab === "accountancy" ? styles.navTabActive : styles.navTab} onClick={() => setActiveTab("accountancy")}>Rachunkowość</span>
         </nav>
 
-        {/* Kids table */}
-        <ChildrenTable kids={kidsData} />
+
+        {/* Tabs content*/}
+        {activeTab === "children" && <ChildrenTab kids={kidsData} />}
+        {activeTab === "classes" && <ClassesTab classesData={classesData}/>}
+
       </div>
     </>
   );

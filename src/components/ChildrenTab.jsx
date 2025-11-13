@@ -1,4 +1,4 @@
-const ChildrenTable = ({ kids }) => (
+const ChildrenTab = ({ kids }) => (
   <div>
     <div style={styles.container}>
       <table style={styles.tableConatiner}>
@@ -77,4 +77,4 @@ const styles = {
   },
 };
 
-export default ChildrenTable;
+export default ChildrenTab;
