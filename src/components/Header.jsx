@@ -29,7 +29,9 @@ const Header = () => {
       <div style={styles.right}>
         <button style={styles.button}>Czat</button>
         <button style={styles.button}>432,32</button>
-        <button style={styles.button} onClick={logout}>Wyloguj</button>
+        <button style={styles.button} onClick={logout}>
+          Wyloguj
+        </button>
       </div>
     </div>
   );
