@@ -75,17 +75,6 @@ const AccountingFundraiserItem = ({ fundraiserData }) => {
       {/* Fundraiser details */}
       {isExpanded && (
         <div style={styles.mainExpandedContent}>
-          <button
-            style={{
-              ...styles.blueButton,
-              width: "100%",
-              padding: "12px",
-              fontSize: "16px",
-            }}
-          >
-            Pobierz raport zbiórki
-          </button>
-
           <div style={styles.subComponentsList}>
             {documents.map((doc) => (
               <InvoiceItem key={doc.id} doc={doc} />

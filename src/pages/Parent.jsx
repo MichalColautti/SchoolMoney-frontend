@@ -4,6 +4,7 @@ import ChildrenTab from "../components/ChildrenTab";
 import ClassesTab from "../components/ClassesTab";
 import TransactionTab from "../components/TransactionTab";
 import AccountingTab from "../components/AccountingTab";
+import FundraiserTab from "../components/FundraiserTab";
 import { useState } from "react";
 
 const classesData = [
@@ -245,6 +246,47 @@ const accountingData = [
   },
 ];
 
+const fundraisersData = [
+  {
+    id: "f1",
+    title: "Wyjazd w góry",
+    goal: "Cel: zbieramy na klasowy wyjazd w góry, żeby spędzić razem niezapomniany czas, oderwać się od ekranów i przeżyć prawdziwą przygodę w naturze! Chcemy zdobyć szczyty, zobaczyć wschód słońca i po prostu dobrze się bawić razem.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80",
+    description: `Opis: Dlaczego zbieramy?
+Nasz cel to umożliwić wyjazd wszystkim uczniom z klasy, niezależnie od sytuacji finansowej. Zebrane środki przeznaczymy na:
+• transport (autokar),
+• noclegi w schronisku lub pensjonacie,
+• wyżywienie,
+• bilety wstępu i drobne atrakcje (np. park linowy, muzeum przyrodnicze).
+Chcemy, żeby nikt nie został w domu tylko dlatego, że nie mógł sobie pozwolić na wyjazd. Każda złotówka przybliża nas do wspólnego celu
+Dlaczego góry?
+Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, kto jest najlepszy z matmy czy polskiego, tylko to, że razem pomagamy sobie wejść na szczyt. To nie tylko wyjazd, to lekcja przyjaźni, współdziałania i odpowiedzialności.`,
+    endDate: "12.10.2025",
+    costPerChild: 250,
+    organizer: "Kamil Kowalski",
+    isExpandedDefault: true,
+    badges: [
+      { text: "Wpłacono", type: "blue" },
+      { text: "Aktywna", type: "green" },
+    ],
+    children: [
+      {
+        id: "s9",
+        name: "Zofia Kowalska",
+        amountPaid: 200,
+        avatar: null,
+      },
+      {
+        id: "s1",
+        name: "Jan Kowalski",
+        amountPaid: 250,
+        avatar: null,
+      },
+    ],
+  },
+];
+
 const Parent = () => {
   const [activeTab, setActiveTab] = useState("children");
 
@@ -306,8 +348,15 @@ const Parent = () => {
         {/* Tabs content*/}
         {activeTab === "children" && <ChildrenTab kids={kidsData} />}
         {activeTab === "classes" && <ClassesTab classesData={classesData} />}
-        {activeTab === "transactions" && <TransactionTab transactionsData={transactionsData} />}
-        {activeTab === "accountancy" && <AccountingTab accountingData={accountingData} />}
+        {activeTab === "fundraisers" && (
+          <FundraiserTab fundraisersData={fundraisersData} />
+        )}
+        {activeTab === "transactions" && (
+          <TransactionTab transactionsData={transactionsData} />
+        )}
+        {activeTab === "accountancy" && (
+          <AccountingTab accountingData={accountingData} />
+        )}
       </div>
     </>
   );
