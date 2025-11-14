@@ -2,6 +2,7 @@ import Header from "../components/Header";
 import Panel from "../components/Panel";
 import ChildrenTab from "../components/ChildrenTab";
 import ClassesTab from "../components/ClassesTab";
+import TransactionTab from "../components/TransactionTab";
 import { useState } from "react";
 
 const classesData = [
@@ -64,6 +65,53 @@ const kidsData = [
   },
 ];
 
+const transactionsData = [
+  {
+    id: "t1",
+    classInfo: {
+      name: "Klasa 4C",
+      year: "2024/2025",
+    },
+    fundraiser: {
+      name: "Wyjazd w góry",
+    },
+    transactionDate: "01.09.2025",
+    bookingDate: "02.09.2025",
+    amount: "250.00 zł",
+    status: "failed", 
+    sender: {
+      name: "Anna Kowal ul. Słoneczna 12/4, 00-101 Warszawa",
+      account: "PL36 3221 8455 6609 7202 5870 7314",
+    },
+    recipient: {
+      account: "PL31 2012 4992 1040 2274 5140 2342",
+    },
+    paymentMethod: "blik",
+  },
+  {
+    id: "t2",
+    classInfo: {
+      name: "Klasa 1A",
+      year: "2023/2024",
+    },
+    fundraiser: {
+      name: "Wyjście do kina",
+    },
+    transactionDate: "30.08.2025",
+    bookingDate: "30.08.2025",
+    amount: "50.00 zł",
+    status: "success",
+    sender: {
+      name: "Jan Kowalski, ul. Słoneczna 12/4, 00-101 Warszawa",
+      account: "PL36 3221 8455 6609 7202 5870 7314",
+    },
+    recipient: {
+      account: "PL31 2012 4992 1040 2274 5140 2342",
+    },
+    paymentMethod: "przelew tradycyjny",
+  },
+];
+
 const Parent = () => {
   const [activeTab, setActiveTab] = useState("children");
 
@@ -91,6 +139,7 @@ const Parent = () => {
         {/* Tabs content*/}
         {activeTab === "children" && <ChildrenTab kids={kidsData} />}
         {activeTab === "classes" && <ClassesTab classesData={classesData}/>}
+        {activeTab === "transactions" && <TransactionTab transactionsData={transactionsData}/>}
 
       </div>
     </>
