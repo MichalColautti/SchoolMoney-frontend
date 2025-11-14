@@ -2,7 +2,7 @@ import { useState } from "react";
 import AccountingFundraiserItem from "./AccountingFundraiserItem";
 
 const AccountingItem = ({ classData }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
   const { classInfo, fundraisers } = classData;

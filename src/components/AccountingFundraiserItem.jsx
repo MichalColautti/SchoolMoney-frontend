@@ -26,14 +26,17 @@ const InvoiceItem = ({ doc }) => {
 };
 
 const PayoutItem = ({ payout, fundraiserName }) => {
-  const [isPayoutExpanded, setIsPayoutExpanded] = useState(true);
+  const [isPayoutExpanded, setIsPayoutExpanded] = useState(false);
   const togglePayoutExpand = () => setIsPayoutExpanded(!isPayoutExpanded);
   const { details } = payout;
 
   return (
     <div style={styles.subCard}>
       <div style={styles.subHeader} onClick={togglePayoutExpand}>
-        <div style={styles.headerInfo} />
+        <div style={styles.headerInfo}>
+          <div style={styles.fundraiserIcon} />
+          <span style={styles.text}>{fundraiserName} - Wypłata</span>
+        </div>
         <div style={styles.headerActions}>
           <button style={styles.statusSuccess}>Wypłacone</button>
           <div style={styles.expandArrow}>{isPayoutExpanded ? "▲" : "▼"}</div>
@@ -54,7 +57,7 @@ const PayoutItem = ({ payout, fundraiserName }) => {
 };
 
 const AccountingFundraiserItem = ({ fundraiserData }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
   const { fundraiser, documents, payouts } = fundraiserData;

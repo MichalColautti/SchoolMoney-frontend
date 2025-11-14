@@ -11,9 +11,7 @@ const getBadgeStyle = (type) => {
 };
 
 const FundraiserItem = ({ fundraiser }) => {
-  const [isExpanded, setIsExpanded] = useState(
-    fundraiser.isExpandedDefault || false
-  );
+  const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
   const {
