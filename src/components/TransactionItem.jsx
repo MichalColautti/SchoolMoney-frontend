@@ -1,4 +1,5 @@
 import { useState } from "react";
+import TransactionDetails from "./TransactionDetails"; 
 
 const getStatusProps = (status) => {
   switch (status) {
@@ -26,27 +27,16 @@ const TransactionItem = ({ transaction }) => {
 
   const statusProps = getStatusProps(transaction.status);
 
-  const {
-    classInfo,
-    fundraiser,
-    transactionDate,
-    bookingDate,
-    amount,
-    sender,
-    recipient,
-    paymentMethod,
-  } = transaction;
+  const { classInfo, fundraiser, transactionDate, amount } = transaction;
 
   return (
     <div style={styles.transactionItem}>
-      {/* Header */}
       <div style={styles.transactionHeader} onClick={toggleExpand}>
         <div style={styles.transactionInfo}>
           <div style={styles.iconDiv} />
           <span style={styles.classInfo}>
-            {classInfo.name} 
+            {classInfo.name} {classInfo.year}
           </span>
-          <span style={styles.text}>{classInfo.year}</span>
           <div style={styles.fundraiserIcon} />
           <span style={styles.text}>{fundraiser.name}</span>
 
@@ -57,56 +47,18 @@ const TransactionItem = ({ transaction }) => {
             </>
           )}
         </div>
-
         <div style={styles.transactionActions}>
           <button style={statusProps.style}>{statusProps.text}</button>
           <div style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</div>
         </div>
       </div>
 
-      {/* Transaction details */}
       {isExpanded && (
         <div style={styles.expandedContent}>
-          <div style={styles.detailRow}>
-            <strong>Zbiórka:</strong>
-            <span style={styles.fundraiserDetail}>
-              <div style={styles.fundraiserIcon} /> {fundraiser.name}
-            </span>
-          </div>
-          <div style={styles.detailRow}>
-            <strong>Data operacji:</strong> {transactionDate}
-          </div>
-          <div style={styles.detailRow}>
-            <strong>Data księgowania:</strong> {bookingDate}
-          </div>
-          <div style={styles.detailRow}>
-            <strong>Status:</strong>{" "}
-            <span style={{ color: statusProps.style.color }}>
-              {statusProps.text}
-            </span>
-          </div>
-          <div style={styles.detailRow}>
-            <strong>Kwota:</strong> {amount}
-          </div>
-
-          <div style={styles.separator} />
-
-          <div style={styles.detailRow}>
-            <strong>Konto nadawcy:</strong> {sender.account}
-          </div>
-          <div style={styles.detailRow}>
-            <strong>Dane nadawcy:</strong> {sender.name}
-          </div>
-          <div style={styles.detailRow}>
-            <strong>Konto odbiorcy:</strong> {recipient.account}
-          </div>
-          <div style={styles.detailRow}>
-            <strong>Metoda płatności:</strong> {paymentMethod}
-          </div>
-
-          <div style={styles.separator} />
-
-          <button style={styles.downloadButton}>Pobierz</button>
+          <TransactionDetails
+            details={transaction}
+            fundraiserName={transaction.fundraiser.name}
+          />
         </div>
       )}
     </div>
@@ -130,19 +82,19 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "12px",
-    flexWrap: "wrap", 
+    flexWrap: "wrap",
   },
   iconDiv: {
     width: 40,
     height: 40,
     borderRadius: "16px",
-    background: "#4789dfff", 
+    background: "#4789dfff",
   },
   fundraiserIcon: {
     width: 32,
     height: 32,
     borderRadius: "16px",
-    background: "#00ec18ff", 
+    background: "#00ec18ff",
   },
   classInfo: {
     fontWeight: "bold",
@@ -170,36 +122,6 @@ const styles = {
     paddingTop: "16px",
     marginTop: "16px",
     borderTop: "3px solid #F3F4F6",
-  },
-  detailRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "4px 0",
-    fontSize: "14px",
-    color: "#334155",
-  },
-  fundraiserDetail: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px", 
-  },
-  separator: {
-    height: "1px",
-    background: "#F3F4F6",
-    margin: "12px 0",
-  },
-  downloadButton: {
-    width: "fit-content",
-    background: "#2B7FFF",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    padding: "10px 24px",
-    fontWeight: "bold",
-    fontSize: "14px",
-    cursor: "pointer",
-    marginLeft: "auto",
-    display: "block",
   },
   statusButton: {
     border: "none",
