@@ -6,6 +6,10 @@ import Reset from "../components/auth/Reset";
 const AuthTabs = () => {
   const [tab, setTab] = useState("login");
 
+  const handleBackToLogin = () => {
+      setTab("login");
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.box}>
@@ -36,7 +40,7 @@ const AuthTabs = () => {
         </div>
 
         {tab === "login" && <Login />}
-        {tab === "register" && <Register />}
+        {tab === "register" && <Register onSuccess={handleBackToLogin}/>}
         {tab === "reset" && <Reset />}
       </div>
     </div>

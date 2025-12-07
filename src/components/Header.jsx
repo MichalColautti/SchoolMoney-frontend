@@ -6,7 +6,7 @@ const Header = () => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.navigation}>
+      <nav style={styles.navigation}>
         <NavLink
           to="/parent"
           style={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
@@ -25,11 +25,13 @@ const Header = () => {
         >
           Konto
         </NavLink>
-      </div>
+      </nav>
       <div style={styles.right}>
         <button style={styles.button}>Czat</button>
         <button style={styles.button}>432,32</button>
-        <button style={styles.button} onClick={logout}>Wyloguj</button>
+        <button style={styles.button} onClick={logout}>
+          Wyloguj
+        </button>
       </div>
     </div>
   );
@@ -58,13 +60,13 @@ const styles = {
     color: "#64748B",
     textDecoration: "none",
     fontWeight: 500,
-    fontSize: "15px",
+    fontSize: "20px",
   },
   activeLink: {
     color: "#2B7FFF",
     textDecoration: "none",
     fontWeight: 600,
-    fontSize: "15px",
+    fontSize: "20px",
   },
   right: {
     display: "flex",
