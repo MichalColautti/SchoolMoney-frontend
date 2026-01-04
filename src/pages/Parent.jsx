@@ -1,10 +1,10 @@
 import Header from "../components/Header";
 import Panel from "../components/Panel";
-import ChildrenTab from "../components/ChildrenTab";
-import ClassesTab from "../components/ClassesTab";
-import TransactionTab from "../components/TransactionTab";
-import AccountingTab from "../components/AccountingTab";
-import FundraiserTab from "../components/FundraiserTab";
+import ChildrenTab from "../components/tabs/ChildrenTab";
+import ClassesTab from "../components/tabs/ClassesTab";
+import TransactionTab from "../components/tabs/TransactionTab";
+import AccountingTab from "../components/tabs/AccountingTab";
+import FundraiserTab from "../components/tabs/FundraiserTab";
 import { useState } from "react";
 
 const classesData = [

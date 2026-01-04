@@ -1,12 +1,12 @@
-import ClassItem from "./ClassItem"; 
+import MyClassItem from "../items/MyClassItem";
 
-const ClassesTab = ({ classesData }) => {
+const MyClassesTab = ({ classesData }) => {
   return (
     <div>
       {/* Class container */}
       <div style={styles.classContainer}>
         {classesData.map((classInfo) => (
-          <ClassItem key={classInfo.id} classInfo={classInfo} />
+          <MyClassItem key={classInfo.id} classInfo={classInfo} />
         ))}
       </div>
 
@@ -23,8 +23,8 @@ const styles = {
   classContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: "16px", 
-    marginBottom: "16px", 
+    gap: "16px",
+    marginBottom: "16px",
   },
   actionButtons: {
     display: "flex",
@@ -43,4 +43,4 @@ const styles = {
   },
 };
 
-export default ClassesTab;
+export default MyClassesTab;

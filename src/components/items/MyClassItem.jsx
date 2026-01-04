@@ -1,7 +1,7 @@
 import { useState } from "react";
-import TrashcanIcon from "../assets/trashcan.svg";
+import TrashcanIcon from "../../assets/trashcan.svg";
 
-const ClassItem = ({ classInfo }) => {
+const MyClassItem = ({ classInfo }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -217,4 +217,4 @@ const styles = {
   },
 };
 
-export default ClassItem;
+export default MyClassItem;
