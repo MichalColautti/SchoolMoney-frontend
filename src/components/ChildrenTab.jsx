@@ -1,5 +1,8 @@
 import { useState, useRef } from "react";
 import TrashcanIcon from "../assets/trashcan.svg";
+import CancelIcon from "../assets/cancel.svg";
+import ImageFileIcon from "../assets/imageFile.svg";
+import UploadFileIcon from "../assets/upload.svg"
 
 const ChildrenTab = ({ kids }) => {
   const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
@@ -15,10 +18,18 @@ const ChildrenTab = ({ kids }) => {
     dob: "",
     photo: "",
   });
+
+  const [isAddExistingKidModalOpen, setIsAddExistingKidModalOpen] =
+    useState(false);
+  const [existingKidUID, setExistingKidUID] = useState("");
+  const [existingKidError, setExistingKidError] = useState("");
+
   const fileInputRef = useRef(null);
   const dateInputRef = useRef(null);
 
   const toggleAddKidModal = () => setIsAddKidModalOpen(!isAddKidModalOpen);
+  const toggleAddExistingKidModal = () =>
+    setIsAddExistingKidModalOpen(!isAddExistingKidModalOpen);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -64,6 +75,19 @@ const ChildrenTab = ({ kids }) => {
       photo: "",
     });
   };
+
+  const handleAddExistingChild = () => {
+    if (!existingKidUID.trim()) {
+      setExistingKidError("UID jest wymagane.");
+      return;
+    }
+
+    console.log("Adding existing child with UID:", existingKidUID);
+    // Add logic
+
+    toggleAddExistingKidModal();
+  };
+
   return (
     <div>
       <div style={styles.container}>
@@ -105,7 +129,9 @@ const ChildrenTab = ({ kids }) => {
         <button style={styles.button} onClick={toggleAddKidModal}>
           Dodaj nowe dziecko
         </button>
-        <button style={styles.button}>Dodaj istniejące dziecko</button>
+        <button style={styles.button} onClick={toggleAddExistingKidModal}>
+          Dodaj istniejące dziecko
+        </button>
       </div>
 
       {/* Add kid modal */}
@@ -116,19 +142,7 @@ const ChildrenTab = ({ kids }) => {
             <div style={styles.modalHeader}>
               <h3 style={styles.modalTitle}>Dodaj dziecko do konta</h3>
               <button onClick={toggleAddKidModal} style={styles.closeButton}>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#2B7FFF"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
+                <img src={CancelIcon} alt="cancel" width={24} height={24} />
               </button>
             </div>
 
@@ -220,17 +234,7 @@ const ChildrenTab = ({ kids }) => {
 
                   {newChild.photo ? (
                     <div style={styles.fileRow}>
-                      <div style={styles.blueIconBox}>
-                        {/* Ikona pliku */}
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="white"
-                        >
-                          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
-                        </svg>
-                      </div>
+                      <img src={ImageFileIcon} alt="imageFile" width={24} height={24} />
                       <span style={styles.fileName}>{newChild.photo.name}</span>
                       <button
                         style={styles.trashBtn}
@@ -241,32 +245,13 @@ const ChildrenTab = ({ kids }) => {
                             fileInputRef.current.value = "";
                         }}
                       >
-                        {/* Ikona kosza */}
                         <img src={TrashcanIcon} alt="delete" />
                       </button>
                     </div>
                   ) : (
                     <>
                       <div style={{ marginBottom: "12px" }}>
-                        {/* Ikona CHMURKI ze strzałką */}
-                        <svg
-                          width="64"
-                          height="64"
-                          viewBox="0 0 64 64"
-                          fill="none"
-                        >
-                          <path
-                            d="M48.5 26.5C47.8 19.3 41.7 13.5 34.5 13.5C28.2 13.5 22.8 17.6 21 23.3C13.9 24.2 8.5 30.3 8.5 37.5C8.5 45.2 14.8 51.5 22.5 51.5H47.5C54.4 51.5 60 45.9 60 39C60 32.4 55 27 48.5 26.5Z"
-                            fill="#2B7FFF"
-                          />
-                          <path
-                            d="M34.5 26V39.5M34.5 26L29.5 31M34.5 26L39.5 31"
-                            stroke="white"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <img src={UploadFileIcon} alt="UploadFile" width={80} height={80} />
                       </div>
                       <span style={styles.uploadLabelBold}>
                         Wyślij zdjęcie profilowe
@@ -283,6 +268,62 @@ const ChildrenTab = ({ kids }) => {
             {/* Footer */}
             <div style={styles.modalFooter}>
               <button onClick={handleAddChild} style={styles.submitButton}>
+                Dodaj dziecko
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add existing kid */}
+      {isAddExistingKidModalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalWindow}>
+            {/* Header */}
+            <div style={styles.modalHeader}>
+              <h3 style={styles.modalTitle}>
+                Dodaj istniejące dziecko do konta
+              </h3>
+              <button
+                style={styles.closeButton}
+                onClick={toggleAddExistingKidModal}
+              >
+                <img src={CancelIcon} alt="cancel" width={24} height={24} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div style={styles.modalBody}>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>
+                  UID
+                  <span style={{ fontWeight: 400, color: "#aaa" }}>
+                    {" "}
+                    (numer dziecka w systemie, widoczny na koncie innego
+                    rodzica)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  style={styles.input}
+                  value={existingKidUID}
+                  onChange={(e) => {
+                    setExistingKidUID(e.target.value);
+                    if (e.target.value) setExistingKidError("");
+                  }}
+                />
+                {existingKidError && (
+                  <span style={styles.errorText}>{existingKidError}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={styles.modalFooter}>
+              <button
+                onClick={handleAddExistingChild}
+                style={styles.submitButton}
+              >
                 Dodaj dziecko
               </button>
             </div>
@@ -365,6 +406,11 @@ const styles = {
     border: "none",
     cursor: "pointer",
     padding: "4px",
+    width: "32px",
+    height: "32px",
+    borderRadius: "8px",
+  },
+  closeIcon: {
   },
   modalBody: {
     display: "flex",
@@ -449,15 +495,6 @@ const styles = {
     alignItems: "center",
     gap: "12px",
   },
-  blueIconBox: {
-    width: "24px",
-    height: "24px",
-    background: "#2B7FFF",
-    borderRadius: "4px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   fileName: {
     fontSize: "14px",
     fontWeight: "500",
@@ -496,12 +533,12 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    background: "#F0F9FF",       
+    background: "#F0F9FF",
     border: "2px dashed #2B7FFF",
     borderRadius: "10px",
     padding: "32px",
     cursor: "pointer",
-    minHeight: "140px",         
+    minHeight: "140px",
     boxSizing: "border-box",
   },
   uploadSectionFilled: {

@@ -28,7 +28,7 @@ const Header = () => {
       </nav>
       <div style={styles.right}>
         <button style={styles.button}>Czat</button>
-        <button style={styles.button}>432,32</button>
+        <button style={styles.button}>432,32 zł</button>
         <button style={styles.button} onClick={logout}>
           Wyloguj
         </button>
