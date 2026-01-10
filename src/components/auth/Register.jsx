@@ -2,7 +2,7 @@ import {useState} from "react";
 import showPasswordIcon from "../../assets/showPasswordIcon.svg";
 import hidePasswordIcon from "../../assets/hidePasswordIcon.svg";
 import {useAuth} from "../../contexts/AuthContext";
-import {useOnChange} from "../../hooks/handleOnChangeInput";
+import {useOnChange} from "../../hooks/useOnChange";
 
 const Register = ({onSuccess}) => {
     const [showPassword, setShowPassword] = useState(false);
