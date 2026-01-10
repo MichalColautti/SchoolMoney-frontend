@@ -3,7 +3,7 @@ import {useState} from "react";
 export const useOnChange = (initialState) => {
     const [data, setData] = useState(initialState)
 
-    const resetState = () => setData(initialState)
+    const clearData = () => setData(initialState)
 
     const onChangeInput = (value, field) => {
         setData({
@@ -15,7 +15,7 @@ export const useOnChange = (initialState) => {
     return {
         data,
         setData,
-        resetState,
+        clearData,
         onChangeInput
     };
 }

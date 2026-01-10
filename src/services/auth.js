@@ -1,6 +1,6 @@
-const API_BASE_URL = "http://localhost:4000";
+const REACT_APP_API_BASE_URL = "http://localhost:4000"
 
-const buildUrl = (path) => `${API_BASE_URL.replace(/\/$/, "")}${path}`;
+const buildUrl = (path) => `${REACT_APP_API_BASE_URL.replace(/\/$/, "")}${path}`;
 
 const request = async (path, options = {}) => {
     const response = await fetch(buildUrl(path), {
