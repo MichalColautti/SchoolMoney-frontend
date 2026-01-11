@@ -36,23 +36,34 @@ export const addChild = async (data, token) => {
         const addChildDto = {
             name: data.name,
             surname: data.surname,
-            birthday: data.birthday,
+            birthday: data.birthday.toISOString().split('T')[0],
         }
 
         formData.append('childData', new Blob([JSON.stringify(addChildDto)], {
             type: 'application/json'
         }));
 
-        formData.append('token', token);
-
         formData.append('childPhoto', data.photo);
 
-        return request("/add-children",{
+        return request("/add-child",{
             method: "POST",
             body: formData,
+            headers: {
+                "Authorization": token
+            }
         })
     }
     catch(err){
         console.log("Error during adding child: ", err);
     }
+}
+
+export const addChildById = async (childId, token) => {
+    return request("/add-child-by-id",{
+        method: "POST",
+        body: JSON.stringify(childId),
+        headers: {
+            "Authorization": token
+        }
+    })
 }

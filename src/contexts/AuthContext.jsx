@@ -22,7 +22,7 @@ export const AuthProvider = ({children}) => {
 
     const handleAuthSuccess = useCallback(
         (payload) => {
-            setToken(payload.loginToken.substring(7) || "");
+            setToken("Bearer " + payload.loginToken.substring(7) || "");
             payload.loginToken = "";
             setUser(payload || null);
         },
