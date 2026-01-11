@@ -5,10 +5,11 @@ import UploadFileIcon from "../../assets/upload.svg";
 import {useOnChange} from "../hooks/useOnChange";
 import {emptyChildDataErrors, validateAddChild} from "../scripts/validate/validateAddChild";
 import {useFormatDate} from "../hooks/useFormatDate";
-import {addChild} from "../services/parent";
+import {addChild, addChildById} from "../services/parent";
 import {useAuth} from "../contexts/AuthContext";
+import {validateAddExistingChild} from "../scripts/validate/validateAddExistingChild";
 
-const ChildrenTab = ({kids}) => {
+const ChildrenTab = () => {
     const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
 
     const emptyChildData = {
@@ -22,7 +23,7 @@ const ChildrenTab = ({kids}) => {
 
     const {formatToShortDateString} = useFormatDate();
 
-    const {token} = useAuth();
+    const {token, user} = useAuth();
     //Add new child Errors
     const [formErrors, setFormErrors] = useState(emptyChildDataErrors);
 
@@ -30,7 +31,7 @@ const ChildrenTab = ({kids}) => {
     const [isAddExistingKidModalOpen, setIsAddExistingKidModalOpen] = useState(false);
 
     //Add existing kid id
-    const [existingKidUID, setExistingKidUID] = useState("");
+    const [childId, setChildId] = useState("");
 
     //Add existing kid id error
     const [existingKidError, setExistingKidError] = useState("");
@@ -64,14 +65,21 @@ const ChildrenTab = ({kids}) => {
         }
     };
 
-    const handleAddExistingChild = () => {
-        if (!existingKidUID.trim()) {
-            setExistingKidError("UID jest wymagane.");
+    const handleAddExistingChild = async () => {
+        if (!validateAddExistingChild(childId)) {
+            setExistingKidError("UID jest wymagane!");
             return;
         }
 
-        console.log("Adding existing child with UID:", existingKidUID);
-        // Add logic
+        const response = await addChildById(childId, token);
+
+        console.log(response);
+
+        setExistingKidError("");
+
+        setChildId("");
+
+        console.log("Adding existing child with UID:", childId);
 
         toggleAddExistingKidModal();
     };
@@ -91,23 +99,25 @@ const ChildrenTab = ({kids}) => {
                     </tr>
                     </thead>
                     <tbody>
-                    {kids.map((child) => (
-                        <tr key={child.uid} style={{height: 48}}>
-                            <td>
-                                <div style={styles.avatar}/>
-                            </td>
-                            <td>{child.name}</td>
-                            <td>{child.class}</td>
-                            <td>{child.dateOfBirth}</td>
-                            <td>{child.uid}</td>
-                            <td>
+                    {
+                        user && user.children && user.children.map((child) => (
+                            <tr key={child.id} style={{height: 48}}>
+                                <td>
+                                    <div style={styles.avatar}/>
+                                </td>
+                                <td>{child.name}</td>
+                                <td>{child.class ? child.class : ""}</td>
+                                <td>{child.birthday}</td>
+                                <td>{child.id}</td>
+                                <td>
                   <span style={{cursor: "pointer", marginRight: 8}}>
                     edytuj
                   </span>
-                                <span style={{cursor: "pointer"}}>usuń</span>
-                            </td>
-                        </tr>
-                    ))}
+                                    <span style={{cursor: "pointer"}}>usuń</span>
+                                </td>
+                            </tr>
+                        ))
+                    }
                     </tbody>
                 </table>
             </div>
@@ -222,7 +232,8 @@ const ChildrenTab = ({kids}) => {
 
                                     {data.photo ? (
                                         <div style={styles.fileRow}>
-                                            <img src={URL.createObjectURL(data.photo)} alt="imageFile" style={styles.kidImage}/>
+                                            <img src={URL.createObjectURL(data.photo)} alt="imageFile"
+                                                 style={styles.kidImage}/>
                                             <span style={styles.fileName}>{data.photo.name}</span>
                                             <button
                                                 style={styles.trashBtn}
@@ -294,9 +305,9 @@ const ChildrenTab = ({kids}) => {
                                 <input
                                     type="text"
                                     style={styles.input}
-                                    value={existingKidUID}
+                                    value={childId}
                                     onChange={(e) => {
-                                        setExistingKidUID(e.target.value);
+                                        setChildId(e.target.value);
                                         if (e.target.value) setExistingKidError("");
                                     }}
                                 />
@@ -544,7 +555,7 @@ const styles = {
         fontSize: "12px",
         marginTop: "4px",
     },
-    kidImage:{
+    kidImage: {
         width: "100px",
         height: "100px",
         borderRadius: "10px",
