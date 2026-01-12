@@ -5,7 +5,7 @@ import UploadFileIcon from "../../assets/upload.svg";
 import {useOnChange} from "../hooks/useOnChange";
 import {emptyChildDataErrors, validateAddChild} from "../scripts/validate/validateAddChild";
 import {useFormatDate} from "../hooks/useFormatDate";
-import {addChild, addChildById} from "../services/parent";
+import {addChild, addChildById, REACT_APP_API_BASE_URL} from "../services/parent";
 import {useAuth} from "../contexts/AuthContext";
 import {validateAddExistingChild} from "../scripts/validate/validateAddExistingChild";
 
@@ -23,7 +23,7 @@ const ChildrenTab = () => {
 
     const {formatToShortDateString} = useFormatDate();
 
-    const {token, user} = useAuth();
+    const {token, user, onChangeUserData} = useAuth();
     //Add new child Errors
     const [formErrors, setFormErrors] = useState(emptyChildDataErrors);
 
@@ -41,7 +41,11 @@ const ChildrenTab = () => {
 
     const toggleAddKidModal = () => setIsAddKidModalOpen(!isAddKidModalOpen);
 
-    const toggleAddExistingKidModal = () => setIsAddExistingKidModalOpen(!isAddExistingKidModalOpen);
+    const toggleAddExistingKidModal = () => {
+        setIsAddExistingKidModalOpen(!isAddExistingKidModalOpen);
+        setExistingKidError("");
+        setChildId("");
+    }
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -52,36 +56,50 @@ const ChildrenTab = () => {
         console.log(data)
         if (validateAddChild(data, setFormErrors)) {
             console.log("New child data:", data);
+            try {
+                const response = await addChild(data, token);
 
-            const response = await addChild(data, token);
+                onChangeUserData(response, 'children');
 
-            console.log(response)
+                console.log(response)
 
-            toggleAddKidModal();
+                toggleAddKidModal();
 
-            setFormErrors(emptyChildDataErrors);
+                setFormErrors(emptyChildDataErrors);
 
-            clearData();
+                clearData();
+            } catch (err) {
+                console.log(err)
+            }
         }
     };
 
     const handleAddExistingChild = async () => {
         if (!validateAddExistingChild(childId)) {
             setExistingKidError("UID jest wymagane!");
-            return;
         }
 
-        const response = await addChildById(childId, token);
+        try {
+            const response = await addChildById(childId, token);
 
-        console.log(response);
+            onChangeUserData(response, 'children');
 
-        setExistingKidError("");
+            console.log(response)
 
-        setChildId("");
+            toggleAddExistingKidModal();
+        } catch (err) {
+            switch (err.message) {
+                case "Parent already has this child in children list":
+                    setExistingKidError("Dziecko o tym identyfikatorze jest już przypisane!")
+                    break;
+                case "Child does not exist":
+                    setExistingKidError("Nie ma dziecka o podanym ID!")
+                    break;
 
-        console.log("Adding existing child with UID:", childId);
-
-        toggleAddExistingKidModal();
+                case "Child already have both parents":
+                    setExistingKidError("Dziecko o tym ID, ma już przypisanych oboje rodziców!")
+            }
+        }
     };
 
     return (
@@ -103,10 +121,10 @@ const ChildrenTab = () => {
                         user && user.children && user.children.map((child) => (
                             <tr key={child.id} style={{height: 48}}>
                                 <td>
-                                    <div style={styles.avatar}/>
+                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${child.imageFilePath}`} alt={"child-avatar"} style={styles.avatar}/>
                                 </td>
                                 <td>{child.name}</td>
-                                <td>{child.class ? child.class : ""}</td>
+                                <td>{child.class ? child.class : "Nie przypisany"}</td>
                                 <td>{child.birthday}</td>
                                 <td>{child.id}</td>
                                 <td>

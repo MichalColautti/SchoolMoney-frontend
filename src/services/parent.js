@@ -1,4 +1,4 @@
-const REACT_APP_API_BASE_URL = "http://localhost:4000"
+export const REACT_APP_API_BASE_URL = "http://localhost:4000"
 
 const buildUrl = (path) => `${REACT_APP_API_BASE_URL.replace(/\/$/, "")}/parent${path}`;
 
@@ -14,19 +14,18 @@ const request = async (path, options = {}) => {
         headers: headers,
     });
 
-    let responseBody;
-    try {
-        responseBody = await response.json();
-    } catch (err) {
-        responseBody = null;
-    }
-
     if (!response.ok) {
-        const message = responseBody?.message || `Request failed with status ${response.status}`;
-        throw new Error(message);
+        let errorMessage;
+        try{
+            errorMessage = await response.text();
+        }
+        catch(error) {
+            errorMessage = `Request failed with status ${response.status}`;
+        }
+        throw new Error(errorMessage);
     }
 
-    return responseBody;
+    return response.json();
 };
 
 export const addChild = async (data, token) => {
@@ -54,7 +53,7 @@ export const addChild = async (data, token) => {
         })
     }
     catch(err){
-        console.log("Error during adding child: ", err);
+        throw err;
     }
 }
 
