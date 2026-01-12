@@ -21,6 +21,12 @@ const classesData = [
         fundraiserStatus: "unactive",
       },
     ],
+    mychildren: [
+      {
+        id: "s1",
+        name: "Zofia Kowalska",
+      },
+    ],
     students: [
       { id: "s1", name: "Jan Kowalski" },
       { id: "s2", name: "Jan Kowalski" },
@@ -43,6 +49,12 @@ const classesData = [
         name: "Wyjście do kina",
         userPaymentStatus: "unpaid",
         fundraiserStatus: "active",
+      },
+    ],
+    mychildren: [
+      {
+        id: "s2",
+        name: "Jan Kowalski",
       },
     ],
     students: [

@@ -74,11 +74,12 @@ const styles = {
     alignItems: "center",
   },
   button: {
-    border: "1px solid #000",
+    border: "0px solid #2B7FFF",
     background: "#fff",
     borderRadius: "8px",
-    padding: "2px 16px",
+    padding: "10px 16px",
     fontSize: "14px",
+    boxShadow: "0px 0px 1px 1px rgba(43, 127, 255, 1)",
     cursor: "pointer",
   },
 };
