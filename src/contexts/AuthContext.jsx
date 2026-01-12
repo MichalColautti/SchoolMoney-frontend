@@ -12,6 +12,13 @@ export const AuthProvider = ({children}) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    const onChangeUserData = (data, field) => {
+        setUser((prev) => ({
+            ...prev,
+            [field]: data,
+        }))
+    }
+
     useEffect(() => {
         if (token) {
             localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
@@ -50,7 +57,7 @@ export const AuthProvider = ({children}) => {
         async (payload) => {
             setLoading(true);
             setError(null);
-            if(validateRegisterPassword(payload.password, payload.repeatPassword)){
+            if (validateRegisterPassword(payload.password, payload.repeatPassword)) {
                 setError('Passwords do not match');
                 setLoading(false);
                 return;
@@ -92,6 +99,7 @@ export const AuthProvider = ({children}) => {
             login,
             register,
             logout,
+            onChangeUserData
         }),
         [token, user, error, loading, login, register, logout]
     );
