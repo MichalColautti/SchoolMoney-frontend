@@ -1,10 +1,10 @@
 import Header from "../components/Header";
 import Panel from "../components/Panel";
-import ChildrenTab from "../components/ChildrenTab";
-import ClassesTab from "../components/ClassesTab";
-import TransactionTab from "../components/TransactionTab";
-import AccountingTab from "../components/AccountingTab";
-import FundraiserTab from "../components/FundraiserTab";
+import ChildrenTab from "../components/tabs/ChildrenTab";
+import ClassesTab from "../components/tabs/ClassesTab";
+import TransactionTab from "../components/tabs/TransactionTab";
+import AccountingTab from "../components/tabs/AccountingTab";
+import FundraiserTab from "../components/tabs/FundraiserTab";
 import { useState } from "react";
 
 const classesData = [
@@ -19,6 +19,12 @@ const classesData = [
         name: "Wyjazd w góry",
         userPaymentStatus: "paid",
         fundraiserStatus: "unactive",
+      },
+    ],
+    mychildren: [
+      {
+        id: "s1",
+        name: "Zofia Kowalska",
       },
     ],
     students: [
@@ -43,6 +49,12 @@ const classesData = [
         name: "Wyjście do kina",
         userPaymentStatus: "unpaid",
         fundraiserStatus: "active",
+      },
+    ],
+    mychildren: [
+      {
+        id: "s2",
+        name: "Jan Kowalski",
       },
     ],
     students: [

@@ -1,4 +1,4 @@
-import TransactionItem from "./TransactionItem"; 
+import TransactionItem from "../items/TransactionItem";
 
 const TransactionsTab = ({ transactionsData }) => {
   return (
@@ -14,7 +14,7 @@ const styles = {
   listContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: "16px", 
+    gap: "16px",
   },
 };
 

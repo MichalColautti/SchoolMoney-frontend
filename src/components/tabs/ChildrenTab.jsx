@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import TrashcanIcon from "../assets/trashcan.svg";
-import CancelIcon from "../assets/cancel.svg";
-import ImageFileIcon from "../assets/imageFile.svg";
-import UploadFileIcon from "../assets/upload.svg"
+import TrashcanIcon from "../../assets/trashcan.svg";
+import CancelIcon from "../../assets/cancel.svg";
+import ImageFileIcon from "../../assets/imageFile.svg";
+import UploadFileIcon from "../../assets/upload.svg";
 
 const ChildrenTab = ({ kids }) => {
   const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
@@ -234,7 +234,12 @@ const ChildrenTab = ({ kids }) => {
 
                   {newChild.photo ? (
                     <div style={styles.fileRow}>
-                      <img src={ImageFileIcon} alt="imageFile" width={24} height={24} />
+                      <img
+                        src={ImageFileIcon}
+                        alt="imageFile"
+                        width={24}
+                        height={24}
+                      />
                       <span style={styles.fileName}>{newChild.photo.name}</span>
                       <button
                         style={styles.trashBtn}
@@ -251,7 +256,12 @@ const ChildrenTab = ({ kids }) => {
                   ) : (
                     <>
                       <div style={{ marginBottom: "12px" }}>
-                        <img src={UploadFileIcon} alt="UploadFile" width={80} height={80} />
+                        <img
+                          src={UploadFileIcon}
+                          alt="UploadFile"
+                          width={80}
+                          height={80}
+                        />
                       </div>
                       <span style={styles.uploadLabelBold}>
                         Wyślij zdjęcie profilowe
@@ -410,8 +420,7 @@ const styles = {
     height: "32px",
     borderRadius: "8px",
   },
-  closeIcon: {
-  },
+  closeIcon: {},
   modalBody: {
     display: "flex",
     flexDirection: "column",

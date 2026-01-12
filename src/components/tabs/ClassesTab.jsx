@@ -1,9 +1,9 @@
+import ClassItem from "../items/ClassItem";
 import React, { useState, useRef } from "react";
-import ClassItem from "./ClassItem";
-import cancelIcon from "../assets/cancel.svg";
-import TrashcanIcon from "../assets/trashcan.svg";
-import ImageFileIcon from "../assets/imageFile.svg";
-import UploadFileIcon from "../assets/upload.svg";
+import cancelIcon from "../../assets/cancel.svg";
+import TrashcanIcon from "../../assets/trashcan.svg";
+import ImageFileIcon from "../../assets/imageFile.svg";
+import UploadFileIcon from "../../assets/upload.svg";
 
 const ClassesTab = ({ classesData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);

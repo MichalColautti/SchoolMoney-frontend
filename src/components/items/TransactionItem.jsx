@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TransactionDetails from "./TransactionDetails"; 
+import TransactionDetails from "./../TransactionDetails";
 
 const getStatusProps = (status) => {
   switch (status) {
