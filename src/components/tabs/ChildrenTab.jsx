@@ -2,12 +2,12 @@ import {useState, useRef} from "react";
 import TrashcanIcon from "../../assets/trashcan.svg";
 import CancelIcon from "../../assets/cancel.svg";
 import UploadFileIcon from "../../assets/upload.svg";
-import {useOnChange} from "../hooks/useOnChange";
-import {emptyChildDataErrors, validateAddChild} from "../scripts/validate/validateAddChild";
-import {useFormatDate} from "../hooks/useFormatDate";
-import {addChild, addChildById, REACT_APP_API_BASE_URL} from "../services/parent";
-import {useAuth} from "../contexts/AuthContext";
-import {validateAddExistingChild} from "../scripts/validate/validateAddExistingChild";
+import {useOnChange} from "../../hooks/useOnChange";
+import {emptyChildDataErrors, validateAddChild} from "../../scripts/validate/validateAddChild";
+import {useFormatDate} from "../../hooks/useFormatDate";
+import {addChild, addChildById, REACT_APP_API_BASE_URL} from "../../services/parent";
+import {useAuth} from "../../contexts/AuthContext";
+import {validateAddExistingChild} from "../../scripts/validate/validateAddExistingChild";
 
 const ChildrenTab = () => {
     const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
