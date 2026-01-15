@@ -1,4 +1,4 @@
-import FundraiserItem from "./FundraiserItem";
+import FundraiserItem from "../items/FundraiserItem";
 
 const FundraiserTab = ({ fundraisersData }) => {
   return (

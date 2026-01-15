@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TrashcanIcon from "../assets/trashcan.svg";
+import TrashcanIcon from "../../assets/trashcan.svg";
 
 const ClassItem = ({ classInfo }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -8,7 +8,8 @@ const ClassItem = ({ classInfo }) => {
     setIsExpanded(!isExpanded);
   };
 
-  const { name, year, accessCode, fundraisers, students } = classInfo;
+  const { name, year, accessCode, fundraisers, mychildren, students } =
+    classInfo;
 
   return (
     <div style={styles.classItem}>
@@ -65,11 +66,10 @@ const ClassItem = ({ classInfo }) => {
               </div>
             </div>
           ))}
-
-          {/* Students list*/}
-          <h3 style={styles.sectionTitle}>Uczniowie</h3>
+          {/*My children*/}
+          <h3 style={styles.sectionTitle}>Moje dzieci</h3>
           <div style={styles.studentList}>
-            {students.map((student) => (
+            {mychildren.map((student) => (
               <div key={student.id} style={styles.studentItem}>
                 <div style={styles.studentInfo}>
                   <div style={styles.studentAvatar} />
@@ -80,6 +80,19 @@ const ClassItem = ({ classInfo }) => {
                   style={styles.deleteIcon}
                   alt={"delete"}
                 />
+              </div>
+            ))}
+          </div>
+
+          {/* Students list*/}
+          <h3 style={styles.sectionTitle}>Uczniowie</h3>
+          <div style={styles.studentList}>
+            {students.map((student) => (
+              <div key={student.id} style={styles.studentItem}>
+                <div style={styles.studentInfo}>
+                  <div style={styles.studentAvatar} />
+                  <span>{student.name}</span>
+                </div>
               </div>
             ))}
           </div>
