@@ -1,32 +1,4 @@
-export const REACT_APP_API_BASE_URL = "http://localhost:4000"
-
-const buildUrl = (path) => `${REACT_APP_API_BASE_URL.replace(/\/$/, "")}/parent${path}`;
-
-const request = async (path, options = {}) => {
-    const headers = {...options.headers};
-
-    if(!(options.body instanceof FormData)) {
-        headers['Content-Type'] = 'application/json';
-    }
-
-    const response = await fetch(buildUrl(path), {
-        ...options,
-        headers: headers,
-    });
-
-    if (!response.ok) {
-        let errorMessage;
-        try{
-            errorMessage = await response.text();
-        }
-        catch(error) {
-            errorMessage = `Request failed with status ${response.status}`;
-        }
-        throw new Error(errorMessage);
-    }
-
-    return response.json();
-};
+import {request} from "./utils/request";
 
 export const addChild = async (data, token) => {
     try{
@@ -44,7 +16,7 @@ export const addChild = async (data, token) => {
 
         formData.append('childPhoto', data.photo);
 
-        return request("/add-child",{
+        return request("/parent/add-child",{
             method: "POST",
             body: formData,
             headers: {
@@ -58,7 +30,7 @@ export const addChild = async (data, token) => {
 }
 
 export const addChildById = async (childId, token) => {
-    return request("/add-child-by-id",{
+    return request("/parent/add-child-by-id",{
         method: "POST",
         body: JSON.stringify(childId),
         headers: {

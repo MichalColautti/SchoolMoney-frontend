@@ -1,11 +1,11 @@
 import Header from "../components/Header";
 import Panel from "../components/Panel";
-import ChildrenTab from "../components/tabs/ChildrenTab";
 import TransactionTab from "../components/tabs/TransactionTab";
 import AccountingTab from "../components/tabs/AccountingTab";
 import FundraiserTab from "../components/tabs/FundraiserTab";
 import MyClassesTab from "../components/tabs/MyClassesTab";
 import { useState } from "react";
+import {useAuth} from "../contexts/AuthContext";
 
 const classesData = [
   {
@@ -49,21 +49,6 @@ const classesData = [
       { id: "s9", name: "Zofia Nowak" },
       { id: "s10", name: "Maciej Kowalski" },
     ],
-  },
-];
-
-const kidsData = [
-  {
-    name: "Jan Kowalski",
-    class: "3c",
-    dateOfBirth: "19.20.2009",
-    uid: "489gsgi3",
-  },
-  {
-    name: "Zofia Kowalska",
-    class: "1c",
-    dateOfBirth: "19.20.2009",
-    uid: "489g443",
   },
 ];
 
@@ -290,13 +275,15 @@ Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, k
 const Treasurer = () => {
   const [activeTab, setActiveTab] = useState("myclasses");
 
+  const {user} = useAuth();
+
   return (
     <>
       <Header balance={432.32} />
       <div style={styles.container}>
         {/* Stats */}
         <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-          <Panel title="Moje klasy" value="2" />
+          <Panel title="Moje klasy" value={user.classes.length} />
           <Panel title="Aktywne zbiórki" value="1" />
           <Panel title="Transakcje" value="5" />
         </div>

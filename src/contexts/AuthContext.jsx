@@ -19,6 +19,15 @@ export const AuthProvider = ({children}) => {
         }))
     }
 
+    const onAppendToList = (data, field) => {
+        const tempData = user[field];
+
+        setUser(prev => ({
+            ...prev,
+            [field]: [...tempData, data]
+        }))
+    }
+
     useEffect(() => {
         if (token) {
             localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
@@ -99,7 +108,8 @@ export const AuthProvider = ({children}) => {
             login,
             register,
             logout,
-            onChangeUserData
+            onChangeUserData,
+            onAppendToList
         }),
         [token, user, error, loading, login, register, logout]
     );

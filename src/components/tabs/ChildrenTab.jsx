@@ -5,9 +5,11 @@ import UploadFileIcon from "../../assets/upload.svg";
 import {useOnChange} from "../../hooks/useOnChange";
 import {emptyChildDataErrors, validateAddChild} from "../../scripts/validate/validateAddChild";
 import {useFormatDate} from "../../hooks/useFormatDate";
-import {addChild, addChildById, REACT_APP_API_BASE_URL} from "../../services/parent";
+import {addChild, addChildById} from "../../services/parent";
+
 import {useAuth} from "../../contexts/AuthContext";
 import {validateAddExistingChild} from "../../scripts/validate/validateAddExistingChild";
+import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
 
 const ChildrenTab = () => {
     const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
@@ -84,9 +86,10 @@ const ChildrenTab = () => {
 
             onChangeUserData(response, 'children');
 
-            console.log(response)
-
             toggleAddExistingKidModal();
+
+            setChildId("")
+            setExistingKidError("")
         } catch (err) {
             switch (err.message) {
                 case "Parent already has this child in children list":
@@ -121,7 +124,7 @@ const ChildrenTab = () => {
                         user && user.children && user.children.map((child) => (
                             <tr key={child.id} style={{height: 48}}>
                                 <td>
-                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${child.imageFilePath}`} alt={"child-avatar"} style={styles.avatar}/>
+                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${child.imageId}`} alt={"child-avatar"} style={styles.avatar}/>
                                 </td>
                                 <td>{child.name}</td>
                                 <td>{child.class ? child.class : "Nie przypisany"}</td>
@@ -158,7 +161,7 @@ const ChildrenTab = () => {
                         <div style={styles.modalHeader}>
                             <h3 style={styles.modalTitle}>Dodaj dziecko do konta</h3>
                             <button onClick={toggleAddKidModal} style={styles.closeButton}>
-                                <img src={CancelIcon} alt="cancel" width={24} height={24}/>
+                                <img src={`${CancelIcon}`} alt="cancel" width={24} height={24}/>
                             </button>
                         </div>
 

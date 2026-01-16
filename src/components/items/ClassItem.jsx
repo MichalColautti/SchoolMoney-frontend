@@ -1,5 +1,6 @@
 import { useState } from "react";
 import TrashcanIcon from "../../assets/trashcan.svg";
+import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
 
 const ClassItem = ({ classInfo }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -8,7 +9,7 @@ const ClassItem = ({ classInfo }) => {
     setIsExpanded(!isExpanded);
   };
 
-  const { name, year, accessCode, fundraisers, mychildren, students } =
+  const { name, year, accessCode, fundraisers, children, imageId, students } =
     classInfo;
 
   return (
@@ -16,7 +17,7 @@ const ClassItem = ({ classInfo }) => {
       {/* Header */}
       <div style={styles.classHeader} onClick={toggleExpand}>
         <div style={styles.classInfo}>
-          <div style={styles.classIcon} />
+          <img src={`${REACT_APP_API_BASE_URL}/image/get/${imageId}`} alt={"class-img"} style={styles.classIcon} />
           <div style={styles.className}>{name}</div>
           <div style={styles.classYear}>{year}</div>
         </div>
@@ -29,7 +30,7 @@ const ClassItem = ({ classInfo }) => {
           <div style={styles.accessCode}>Kod dostępu: {accessCode}</div>
 
           <h3 style={styles.sectionTitle}>Aktywne zbiórki</h3>
-          {fundraisers.map((fund) => (
+          {fundraisers && fundraisers.map((fund) => (
             <div key={fund.id} style={styles.fundraiserItem}>
               <div style={styles.fundraiserInfo}>
                 <span style={styles.fundraiserIcon} />
@@ -69,14 +70,14 @@ const ClassItem = ({ classInfo }) => {
           {/*My children*/}
           <h3 style={styles.sectionTitle}>Moje dzieci</h3>
           <div style={styles.studentList}>
-            {mychildren.map((student) => (
+            {children.map((student) => (
               <div key={student.id} style={styles.studentItem}>
                 <div style={styles.studentInfo}>
                   <div style={styles.studentAvatar} />
                   <span>{student.name}</span>
                 </div>
                 <img
-                  src={TrashcanIcon}
+                  src={`${TrashcanIcon}`}
                   style={styles.deleteIcon}
                   alt={"delete"}
                 />
@@ -87,7 +88,7 @@ const ClassItem = ({ classInfo }) => {
           {/* Students list*/}
           <h3 style={styles.sectionTitle}>Uczniowie</h3>
           <div style={styles.studentList}>
-            {students.map((student) => (
+            {students && students.map((student) => (
               <div key={student.id} style={styles.studentItem}>
                 <div style={styles.studentInfo}>
                   <div style={styles.studentAvatar} />
