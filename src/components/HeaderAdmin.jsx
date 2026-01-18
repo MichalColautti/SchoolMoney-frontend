@@ -4,7 +4,6 @@ import { useAuth } from "../contexts/AuthContext";
 import ChatSidebar from "./chat/chatSidebar";
 
 import ChatIcon from "./../assets/chat.svg";
-import CoinIcon from "./../assets/coin.svg";
 import ExitIcon from "./../assets/exit.svg";
 
 const HeaderAdmin = () => {

@@ -1,363 +1,432 @@
-import { useState, useRef } from "react";
-import HeaderAdmin from "../components/HeaderAdmin";
-import TrashcanIcon from "../assets/trashcan.svg";
-import UploadFileIcon from "../assets/upload.svg";
-import ImageFileIcon from "../assets/imageFile.svg";
+import Header from "../components/HeaderAdmin";
+import Panel from "../components/Panel";
+import ChildrenTab from "../components/tabs/ChildrenTab";
+import UsersTab from "../components/tabs/UsersTab";
+import ClassesTab from "../components/tabs/ClassesTab";
+import TransactionTab from "../components/tabs/TransactionTab";
+import AccountingTab from "../components/tabs/AccountingTab";
+import FundraiserTab from "../components/tabs/FundraiserTab";
+import { useState } from "react";
+
+import { useAuth } from "../contexts/AuthContext";
+
+const classesData = [
+  {
+    id: "c1",
+    name: "Klasa 4C",
+    year: "2024/2025",
+    accessCode: "qwem,qwemqw,eqmw,ewqqweqnjweqwk",
+    fundraisers: [
+      {
+        id: "f1",
+        name: "Wyjazd w góry",
+        userPaymentStatus: "paid",
+        fundraiserStatus: "unactive",
+      },
+    ],
+    mychildren: [
+      {
+        id: "s1",
+        name: "Zofia Kowalska",
+      },
+    ],
+    students: [
+      { id: "s1", name: "Jan Kowalski" },
+      { id: "s2", name: "Jan Kowalski" },
+      { id: "s3", name: "Jan Kowalski" },
+      { id: "s4", name: "Jan Kowalski" },
+      { id: "s5", name: "Jan Kowalski" },
+      { id: "s6", name: "Jan Kowalski" },
+      { id: "s7", name: "Jan Kowalski" },
+      { id: "s8", name: "Jan Kowalski" },
+    ],
+  },
+  {
+    id: "c2",
+    name: "Klasa 1A",
+    year: "2023/2024",
+    accessCode: "asdasdmksaaksdasmd",
+    fundraisers: [
+      {
+        id: "f2",
+        name: "Wyjście do kina",
+        userPaymentStatus: "unpaid",
+        fundraiserStatus: "active",
+      },
+    ],
+    mychildren: [
+      {
+        id: "s2",
+        name: "Jan Kowalski",
+      },
+    ],
+    students: [
+      { id: "s9", name: "Zofia Nowak" },
+      { id: "s10", name: "Maciej Kowalski" },
+    ],
+  },
+];
+
+const transactionsData = [
+  {
+    id: "t1",
+    classInfo: {
+      name: "Klasa 4C",
+      year: "2024/2025",
+    },
+    fundraiser: {
+      name: "Wyjazd w góry",
+    },
+    transactionDate: "01.09.2025",
+    bookingDate: "02.09.2025",
+    amount: "250.00 zł",
+    status: "failed",
+    sender: {
+      name: "Anna Kowal ul. Słoneczna 12/4, 00-101 Warszawa",
+      account: "PL36 3221 8455 6609 7202 5870 7314",
+    },
+    recipient: {
+      account: "PL31 2012 4992 1040 2274 5140 2342",
+    },
+    paymentMethod: "blik",
+  },
+  {
+    id: "t2",
+    classInfo: {
+      name: "Klasa 1A",
+      year: "2023/2024",
+    },
+    fundraiser: {
+      name: "Wyjście do kina",
+    },
+    transactionDate: "30.08.2025",
+    bookingDate: "30.08.2025",
+    amount: "50.00 zł",
+    status: "success",
+    sender: {
+      name: "Jan Kowalski, ul. Słoneczna 12/4, 00-101 Warszawa",
+      account: "PL36 3221 8455 6609 7202 5870 7314",
+    },
+    recipient: {
+      account: "PL31 2012 4992 1040 2274 5140 2342",
+    },
+    paymentMethod: "przelew tradycyjny",
+  },
+];
+
+const accountingData = [
+  {
+    id: "class_c1",
+    classInfo: {
+      name: "Klasa 4c",
+      year: "2024/2025",
+    },
+    fundraisers: [
+      {
+        id: "f1_report",
+        fundraiser: {
+          id: "f1",
+          name: "Wyjazd w góry",
+        },
+        documents: [
+          {
+            id: "doc1",
+            number: "Faktura #2024/11/01",
+            date: "25.01.2025",
+            amount: "2500.00 zł",
+            description: "Ubezpieczenie grupowe uczestników wycieczki",
+            status: "settled",
+          },
+        ],
+        payouts: [
+          {
+            id: "p1",
+            status: "paid_out",
+            details: {
+              transactionDate: "01.09.2025",
+              bookingDate: "02.09.2025",
+              status: "success",
+              amount: "2500.00 zł",
+              sender: {
+                name: "Anna Kowal ul. Słoneczna 12/4, 00-101 Warszawa",
+                account: "PL36 3221 8455 6609 7202 5870 7314",
+              },
+              recipient: {
+                account: "PL31 2012 4992 1040 2274 5140 2342",
+              },
+              paymentMethod: "Blik",
+            },
+          },
+        ],
+      },
+      {
+        id: "f3_report",
+        fundraiser: {
+          id: "f3",
+          name: "Dzień Nauczyciela",
+        },
+        documents: [
+          {
+            id: "doc3",
+            number: "Faktura #KWIATY/10/2024",
+            date: "14.10.2024",
+            amount: "150.00 zł",
+            description: "Bukiet kwiatów dla wychowawcy",
+            status: "settled",
+          },
+        ],
+        payouts: [
+          {
+            id: "p3",
+            status: "paid_out",
+            details: {
+              transactionDate: "14.10.2024",
+              bookingDate: "14.10.2024",
+              status: "success",
+              amount: "150.00 zł",
+              sender: {
+                name: "Skarbnik Klasy 4c, Piotr Nowak",
+                account: "PL36 3221 8455 6609 7202 5870 7314",
+              },
+              recipient: {
+                account: "PL11 2222 3333 4444 5555 6666 7777",
+              },
+              paymentMethod: "Karta",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "class_c2",
+    classInfo: {
+      name: "Klasa 1A",
+      year: "2023/2024",
+    },
+    fundraisers: [
+      {
+        id: "f2_report",
+        fundraiser: {
+          id: "f2",
+          name: "Wyjście do kina",
+        },
+        documents: [
+          {
+            id: "doc2",
+            number: "Faktura #KINO/2025/01",
+            date: "20.01.2025",
+            amount: "250.00 zł",
+            description: "Bilety do kina dla klasy 1A",
+            status: "settled",
+          },
+        ],
+        payouts: [
+          {
+            id: "p2",
+            status: "paid_out",
+            details: {
+              transactionDate: "21.01.2025",
+              bookingDate: "21.01.2025",
+              status: "success",
+              amount: "250.00 zł",
+              sender: {
+                name: "Skarbnik Klasy 1A, Jan Nowak",
+                account: "PL36 3221 8455 6609 7202 5870 7314",
+              },
+              recipient: {
+                account: "PL80 1234 5678 9012 3456 7890 1234",
+              },
+              paymentMethod: "Przelew",
+            },
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const fundraisersData = [
+  {
+    id: "f1",
+    title: "Wyjazd w góry",
+    goal: "Cel: zbieramy na klasowy wyjazd w góry, żeby spędzić razem niezapomniany czas, oderwać się od ekranów i przeżyć prawdziwą przygodę w naturze! Chcemy zdobyć szczyty, zobaczyć wschód słońca i po prostu dobrze się bawić razem.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80",
+    description: `Opis: Dlaczego zbieramy?
+Nasz cel to umożliwić wyjazd wszystkim uczniom z klasy, niezależnie od sytuacji finansowej. Zebrane środki przeznaczymy na:
+• transport (autokar),
+• noclegi w schronisku lub pensjonacie,
+• wyżywienie,
+• bilety wstępu i drobne atrakcje (np. park linowy, muzeum przyrodnicze).
+Chcemy, żeby nikt nie został w domu tylko dlatego, że nie mógł sobie pozwolić na wyjazd. Każda złotówka przybliża nas do wspólnego celu
+Dlaczego góry?
+Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, kto jest najlepszy z matmy czy polskiego, tylko to, że razem pomagamy sobie wejść na szczyt. To nie tylko wyjazd, to lekcja przyjaźni, współdziałania i odpowiedzialności.`,
+    endDate: "12.10.2025",
+    costPerChild: 250,
+    organizer: "Kamil Kowalski",
+    isExpandedDefault: true,
+    badges: [
+      { text: "Wpłacono", type: "blue" },
+      { text: "Aktywna", type: "green" },
+    ],
+    children: [
+      {
+        id: "s9",
+        name: "Zofia Kowalska",
+        amountPaid: 200,
+        avatar: null,
+      },
+      {
+        id: "s1",
+        name: "Jan Kowalski",
+        amountPaid: 250,
+        avatar: null,
+      },
+    ],
+  },
+];
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState("personal");
+  const [users, setUsers] = useState([
+    {
+      id: 1,
+      name: "Adam Mahaj",
+      email: "adam@gmail.com",
+      status: "Aktywny",
+      createdAt: "07.03.2025",
+      role: "Rodzic",
+    },
+    {
+      id: 2,
+      name: "Marek Nowak",
+      email: "marek@gmail.com",
+      status: "Aktywny",
+      createdAt: "05.03.2025",
+      role: "Skarbnik",
+    },
+    {
+      id: 3,
+      name: "Anna Kowalska",
+      email: "ania@gmail.com",
+      status: "Zablokowany",
+      createdAt: "01.03.2025",
+      role: "Admin",
+    },
+    {
+      id: 4,
+      name: "Piotr Zieliński",
+      email: "piotr@gmail.com",
+      status: "Aktywny",
+      createdAt: "10.03.2025",
+      role: "Skarbnik",
+    },
+  ]);
 
-  const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
-    dob: "",
-    photo: null,
-  });
+  const [activeTab, setActiveTab] = useState("users");
 
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  const fileInputRef = useRef(null);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUserData((prev) => ({ ...prev, photo: file }));
-    }
-  };
-
-  const handleRemoveFile = (e) => {
-    e.stopPropagation();
-    setUserData((prev) => ({ ...prev, photo: null }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
+  const { user } = useAuth();
 
   return (
-    <div style={styles.pageContainer}>
-      <HeaderAdmin />
-
-      <div style={styles.contentWrapper}>
-        <div style={styles.card}>
-          {/* Nav */}
-          <div style={styles.tabsContainer}>
-            <button
-              style={
-                activeTab === "personal" ? styles.tabActive : styles.tabInactive
-              }
-              onClick={() => setActiveTab("personal")}
-            >
-              Dane osobowe
-            </button>
-            <button
-              style={
-                activeTab === "password" ? styles.tabActive : styles.tabInactive
-              }
-              onClick={() => setActiveTab("password")}
-            >
-              Zmiana hasła
-            </button>
-          </div>
-
-          {/* Personal data */}
-          {activeTab === "personal" && (
-            <div style={styles.formContainer}>
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Imię</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={userData.firstName}
-                  onChange={handleInputChange}
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Nazwisko</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={userData.lastName}
-                  onChange={handleInputChange}
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Data urodzenia</label>
-                <input
-                  type="text"
-                  name="dob"
-                  value={userData.dob}
-                  onChange={handleInputChange}
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Zdjęcie profilowe</label>
-
-                <div
-                  style={
-                    userData.photo
-                      ? styles.uploadSectionFilled
-                      : styles.uploadContainer
-                  }
-                  onClick={() =>
-                    fileInputRef.current && fileInputRef.current.click()
-                  }
-                >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    style={{ display: "none" }}
-                    accept="image/*"
-                    onChange={handleFileChange}
-                  />
-
-                  {userData.photo ? (
-                    <div style={styles.fileRow}>
-                      <img
-                        src={ImageFileIcon}
-                        alt="File"
-                        width={24}
-                        height={24}
-                      />
-                      <span style={styles.fileName}>{userData.photo.name}</span>
-                      <button
-                        onClick={handleRemoveFile}
-                        style={styles.trashBtn}
-                      >
-                        <img
-                          src={TrashcanIcon}
-                          alt="Delete"
-                          width={24}
-                          height={24}
-                        />
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <div style={{ marginBottom: "12px" }}>
-                        <img
-                          src={UploadFileIcon}
-                          alt="Upload"
-                          width={64}
-                          height={64}
-                        />
-                      </div>
-                      <span style={styles.uploadLabelBold}>
-                        Wyślij zdjęcie profilowe
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <button style={styles.saveButton}>Zapisz zmiany</button>
-            </div>
-          )}
-
-          {/* Change password */}
-          {activeTab === "password" && (
-            <div style={styles.formContainer}>
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Obecne hasło</label>
-                <input
-                  type="password"
-                  name="currentPassword"
-                  value={passwordData.currentPassword}
-                  onChange={handlePasswordChange}
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Nowe hasło</label>
-                <input
-                  type="password"
-                  name="newPassword"
-                  value={passwordData.newPassword}
-                  onChange={handlePasswordChange}
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Potwierdź nowe hasło</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={passwordData.confirmPassword}
-                  onChange={handlePasswordChange}
-                  style={styles.input}
-                />
-              </div>
-
-              <button style={styles.saveButton}>Zapisz zmiany</button>
-            </div>
-          )}
+    <>
+      <Header />
+      <div style={styles.container}>
+        {/* Stats */}
+        <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
+          <Panel title="Wszyscy użytkownicy" value="250" />
+          <Panel title="Skarbnicy" value="10" />
+          <Panel title="Transakcje" value="5" />
         </div>
+
+        {/* Nav */}
+        <nav style={styles.nav}>
+          <span
+            style={activeTab === "users" ? styles.navTabActive : styles.navTab}
+            onClick={() => setActiveTab("users")}
+          >
+            Użytkownicy
+          </span>
+          <span
+            style={
+              activeTab === "classes" ? styles.navTabActive : styles.navTab
+            }
+            onClick={() => setActiveTab("classes")}
+          >
+            Klasy
+          </span>
+          <span
+            style={
+              activeTab === "fundraisers" ? styles.navTabActive : styles.navTab
+            }
+            onClick={() => setActiveTab("fundraisers")}
+          >
+            Zbiórki
+          </span>
+          <span
+            style={
+              activeTab === "fundraisers" ? styles.navTabActive : styles.navTab
+            }
+            onClick={() => setActiveTab("fundraisers")}
+          >
+            Raporty
+          </span>
+        </nav>
+
+        {/* Tabs content*/}
+        {activeTab === "users" && (
+          <UsersTab users={users} setUsers={setUsers} />
+        )}
+        {activeTab === "classes" && <ClassesTab classesData={classesData} />}
+        {activeTab === "fundraisers" && (
+          <FundraiserTab fundraisersData={fundraisersData} />
+        )}
+        {activeTab === "transactions" && (
+          <TransactionTab transactionsData={transactionsData} />
+        )}
+        {activeTab === "accountancy" && (
+          <AccountingTab accountingData={accountingData} />
+        )}
       </div>
-    </div>
+    </>
   );
 };
 
 const styles = {
-  pageContainer: {
+  container: {
+    background: "#F2F8FF",
     minHeight: "100vh",
-    backgroundColor: "#F5F7FA",
-    display: "flex",
-    flexDirection: "column",
+    padding: "16px",
     fontFamily: "'Krub', sans-serif",
   },
-  contentWrapper: {
-    padding: "24px",
-    display: "flex",
-    justifyContent: "center",
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: "20px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-    width: "100%",
-    maxWidth: "800px",
-    padding: "32px",
-    boxSizing: "border-box",
-  },
-  tabsContainer: {
-    display: "flex",
-    gap: "24px",
-    marginBottom: "32px",
-  },
-  tabActive: {
-    flex: 1,
-    padding: "14px",
-    borderRadius: "25px",
-    border: "none",
-    backgroundColor: "#2B7FFF",
-    color: "#fff",
-    fontSize: "16px",
-    fontWeight: "600",
-    cursor: "pointer",
-    textAlign: "center",
-  },
-  tabInactive: {
-    flex: 1,
-    padding: "14px",
-    borderRadius: "25px",
-    border: "1px solid #E4E7EC",
-    backgroundColor: "#fff",
-    color: "#667085",
-    fontSize: "16px",
-    fontWeight: "600",
-    cursor: "pointer",
-    textAlign: "center",
-  },
-  formContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "24px",
-  },
-  inputGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  label: {
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#101828",
-  },
-  input: {
-    backgroundColor: "#F0F9FF",
-    border: "none",
+  tableContainer: {
+    background: "#fff",
     borderRadius: "12px",
     padding: "16px",
-    fontSize: "16px",
-    color: "#344054",
-    outline: "none",
+    marginBottom: "16px",
+    boxShadow: "0 1px 4px #e6eaf3",
   },
-  uploadContainer: {
+  nav: {
     display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F0F9FF",
-    border: "2px dashed #2B7FFF",
-    borderRadius: "12px",
-    padding: "32px",
-    cursor: "pointer",
-    minHeight: "140px",
-    boxSizing: "border-box",
-  },
-  uploadSectionFilled: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    backgroundColor: "#F2F7FD",
-    border: "1px solid transparent",
-    borderRadius: "12px",
-    padding: "16px",
-    cursor: "pointer",
-    boxSizing: "border-box",
-    minHeight: "60px",
-  },
-  uploadLabelBold: {
-    fontWeight: "600",
-    fontSize: "15px",
-    color: "#000",
-  },
-  fileRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    width: "100%",
-  },
-  fileName: {
-    fontSize: "14px",
-    fontWeight: "500",
-    color: "#101828",
-    flex: 1,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  trashBtn: {
-    background: "transparent",
-    border: "none",
-    cursor: "pointer",
-    padding: "4px",
-    display: "flex",
-    alignItems: "center",
-    marginLeft: "auto",
-  },
-  saveButton: {
-    width: "100%",
-    backgroundColor: "#2B7FFF",
-    color: "#fff",
-    border: "none",
-    borderRadius: "12px",
-    padding: "16px",
-    fontSize: "16px",
+    gap: "16px",
+    marginBottom: "16px",
     fontWeight: "bold",
+    background: "#EFF6FF",
+    width: "fit-content",
+    borderRadius: 8,
+  },
+  navTab: {
+    padding: "8px 16px",
+    borderRadius: 8,
+    background: "transparent",
+    color: "#414345",
     cursor: "pointer",
-    marginTop: "8px",
+  },
+  navTabActive: {
+    padding: "8px 16px",
+    borderRadius: 8,
+    background: "#fff",
+    color: "#2B7FFF",
+    cursor: "pointer",
   },
 };
 
