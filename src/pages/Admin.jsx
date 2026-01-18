@@ -1,291 +1,12 @@
 import Header from "../components/HeaderAdmin";
 import Panel from "../components/Panel";
-import ChildrenTab from "../components/tabs/ChildrenTab";
 import UsersTab from "../components/tabs/UsersTab";
-import ClassesTab from "../components/tabs/ClassesTab";
-import TransactionTab from "../components/tabs/TransactionTab";
-import AccountingTab from "../components/tabs/AccountingTab";
-import FundraiserTab from "../components/tabs/FundraiserTab";
+import ClassesTab from "../components/tabs/ClassesTabAdmin";
+import FundraiserTab from "../components/tabs/FundraiserTabAdmin";
+import RaportTab from "../components/tabs/RaportTab";
 import { useState } from "react";
 
 import { useAuth } from "../contexts/AuthContext";
-
-const classesData = [
-  {
-    id: "c1",
-    name: "Klasa 4C",
-    year: "2024/2025",
-    accessCode: "qwem,qwemqw,eqmw,ewqqweqnjweqwk",
-    fundraisers: [
-      {
-        id: "f1",
-        name: "Wyjazd w góry",
-        userPaymentStatus: "paid",
-        fundraiserStatus: "unactive",
-      },
-    ],
-    mychildren: [
-      {
-        id: "s1",
-        name: "Zofia Kowalska",
-      },
-    ],
-    students: [
-      { id: "s1", name: "Jan Kowalski" },
-      { id: "s2", name: "Jan Kowalski" },
-      { id: "s3", name: "Jan Kowalski" },
-      { id: "s4", name: "Jan Kowalski" },
-      { id: "s5", name: "Jan Kowalski" },
-      { id: "s6", name: "Jan Kowalski" },
-      { id: "s7", name: "Jan Kowalski" },
-      { id: "s8", name: "Jan Kowalski" },
-    ],
-  },
-  {
-    id: "c2",
-    name: "Klasa 1A",
-    year: "2023/2024",
-    accessCode: "asdasdmksaaksdasmd",
-    fundraisers: [
-      {
-        id: "f2",
-        name: "Wyjście do kina",
-        userPaymentStatus: "unpaid",
-        fundraiserStatus: "active",
-      },
-    ],
-    mychildren: [
-      {
-        id: "s2",
-        name: "Jan Kowalski",
-      },
-    ],
-    students: [
-      { id: "s9", name: "Zofia Nowak" },
-      { id: "s10", name: "Maciej Kowalski" },
-    ],
-  },
-];
-
-const transactionsData = [
-  {
-    id: "t1",
-    classInfo: {
-      name: "Klasa 4C",
-      year: "2024/2025",
-    },
-    fundraiser: {
-      name: "Wyjazd w góry",
-    },
-    transactionDate: "01.09.2025",
-    bookingDate: "02.09.2025",
-    amount: "250.00 zł",
-    status: "failed",
-    sender: {
-      name: "Anna Kowal ul. Słoneczna 12/4, 00-101 Warszawa",
-      account: "PL36 3221 8455 6609 7202 5870 7314",
-    },
-    recipient: {
-      account: "PL31 2012 4992 1040 2274 5140 2342",
-    },
-    paymentMethod: "blik",
-  },
-  {
-    id: "t2",
-    classInfo: {
-      name: "Klasa 1A",
-      year: "2023/2024",
-    },
-    fundraiser: {
-      name: "Wyjście do kina",
-    },
-    transactionDate: "30.08.2025",
-    bookingDate: "30.08.2025",
-    amount: "50.00 zł",
-    status: "success",
-    sender: {
-      name: "Jan Kowalski, ul. Słoneczna 12/4, 00-101 Warszawa",
-      account: "PL36 3221 8455 6609 7202 5870 7314",
-    },
-    recipient: {
-      account: "PL31 2012 4992 1040 2274 5140 2342",
-    },
-    paymentMethod: "przelew tradycyjny",
-  },
-];
-
-const accountingData = [
-  {
-    id: "class_c1",
-    classInfo: {
-      name: "Klasa 4c",
-      year: "2024/2025",
-    },
-    fundraisers: [
-      {
-        id: "f1_report",
-        fundraiser: {
-          id: "f1",
-          name: "Wyjazd w góry",
-        },
-        documents: [
-          {
-            id: "doc1",
-            number: "Faktura #2024/11/01",
-            date: "25.01.2025",
-            amount: "2500.00 zł",
-            description: "Ubezpieczenie grupowe uczestników wycieczki",
-            status: "settled",
-          },
-        ],
-        payouts: [
-          {
-            id: "p1",
-            status: "paid_out",
-            details: {
-              transactionDate: "01.09.2025",
-              bookingDate: "02.09.2025",
-              status: "success",
-              amount: "2500.00 zł",
-              sender: {
-                name: "Anna Kowal ul. Słoneczna 12/4, 00-101 Warszawa",
-                account: "PL36 3221 8455 6609 7202 5870 7314",
-              },
-              recipient: {
-                account: "PL31 2012 4992 1040 2274 5140 2342",
-              },
-              paymentMethod: "Blik",
-            },
-          },
-        ],
-      },
-      {
-        id: "f3_report",
-        fundraiser: {
-          id: "f3",
-          name: "Dzień Nauczyciela",
-        },
-        documents: [
-          {
-            id: "doc3",
-            number: "Faktura #KWIATY/10/2024",
-            date: "14.10.2024",
-            amount: "150.00 zł",
-            description: "Bukiet kwiatów dla wychowawcy",
-            status: "settled",
-          },
-        ],
-        payouts: [
-          {
-            id: "p3",
-            status: "paid_out",
-            details: {
-              transactionDate: "14.10.2024",
-              bookingDate: "14.10.2024",
-              status: "success",
-              amount: "150.00 zł",
-              sender: {
-                name: "Skarbnik Klasy 4c, Piotr Nowak",
-                account: "PL36 3221 8455 6609 7202 5870 7314",
-              },
-              recipient: {
-                account: "PL11 2222 3333 4444 5555 6666 7777",
-              },
-              paymentMethod: "Karta",
-            },
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "class_c2",
-    classInfo: {
-      name: "Klasa 1A",
-      year: "2023/2024",
-    },
-    fundraisers: [
-      {
-        id: "f2_report",
-        fundraiser: {
-          id: "f2",
-          name: "Wyjście do kina",
-        },
-        documents: [
-          {
-            id: "doc2",
-            number: "Faktura #KINO/2025/01",
-            date: "20.01.2025",
-            amount: "250.00 zł",
-            description: "Bilety do kina dla klasy 1A",
-            status: "settled",
-          },
-        ],
-        payouts: [
-          {
-            id: "p2",
-            status: "paid_out",
-            details: {
-              transactionDate: "21.01.2025",
-              bookingDate: "21.01.2025",
-              status: "success",
-              amount: "250.00 zł",
-              sender: {
-                name: "Skarbnik Klasy 1A, Jan Nowak",
-                account: "PL36 3221 8455 6609 7202 5870 7314",
-              },
-              recipient: {
-                account: "PL80 1234 5678 9012 3456 7890 1234",
-              },
-              paymentMethod: "Przelew",
-            },
-          },
-        ],
-      },
-    ],
-  },
-];
-
-const fundraisersData = [
-  {
-    id: "f1",
-    title: "Wyjazd w góry",
-    goal: "Cel: zbieramy na klasowy wyjazd w góry, żeby spędzić razem niezapomniany czas, oderwać się od ekranów i przeżyć prawdziwą przygodę w naturze! Chcemy zdobyć szczyty, zobaczyć wschód słońca i po prostu dobrze się bawić razem.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80",
-    description: `Opis: Dlaczego zbieramy?
-Nasz cel to umożliwić wyjazd wszystkim uczniom z klasy, niezależnie od sytuacji finansowej. Zebrane środki przeznaczymy na:
-• transport (autokar),
-• noclegi w schronisku lub pensjonacie,
-• wyżywienie,
-• bilety wstępu i drobne atrakcje (np. park linowy, muzeum przyrodnicze).
-Chcemy, żeby nikt nie został w domu tylko dlatego, że nie mógł sobie pozwolić na wyjazd. Każda złotówka przybliża nas do wspólnego celu
-Dlaczego góry?
-Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, kto jest najlepszy z matmy czy polskiego, tylko to, że razem pomagamy sobie wejść na szczyt. To nie tylko wyjazd, to lekcja przyjaźni, współdziałania i odpowiedzialności.`,
-    endDate: "12.10.2025",
-    costPerChild: 250,
-    organizer: "Kamil Kowalski",
-    isExpandedDefault: true,
-    badges: [
-      { text: "Wpłacono", type: "blue" },
-      { text: "Aktywna", type: "green" },
-    ],
-    children: [
-      {
-        id: "s9",
-        name: "Zofia Kowalska",
-        amountPaid: 200,
-        avatar: null,
-      },
-      {
-        id: "s1",
-        name: "Jan Kowalski",
-        amountPaid: 250,
-        avatar: null,
-      },
-    ],
-  },
-];
 
 const Admin = () => {
   const [users, setUsers] = useState([
@@ -322,7 +43,78 @@ const Admin = () => {
       role: "Skarbnik",
     },
   ]);
-
+  const [classesData, setClassesData] = useState([
+    {
+      id: 1,
+      name: "Klasa 4C",
+      year: "2024/2025",
+      openCollections: 3,
+      closedCollections: 12,
+      studentsCount: 25,
+      treasurerName: "Marek Nowak",
+      uid: "CLS-9921",
+      status: "Aktywna",
+    },
+    {
+      id: 2,
+      name: "Klasa 1A",
+      year: "2023/2024",
+      openCollections: 0,
+      closedCollections: 15,
+      studentsCount: 20,
+      treasurerName: "Anna Kowalska",
+      uid: "CLS-4452",
+      status: "Zablokowana",
+    },
+    {
+      id: 3,
+      name: "Klasa 8B",
+      year: "2025/2026",
+      openCollections: 5,
+      closedCollections: 2,
+      studentsCount: 30,
+      treasurerName: "Piotr Zieliński",
+      uid: "CLS-0012",
+      status: "Aktywna",
+    },
+  ]);
+  const [fundraisersData, setFundraisersData] = useState([
+    {
+      id: 1,
+      name: "Wycieczka do Warszawy",
+      className: "Klasa 4C",
+      treasurer: "Marek Nowak",
+      goal: 4000,
+      collected: 2300,
+      createdAt: "07.03.2025",
+      endDate: "brak",
+      status: "Aktywna",
+    },
+    {
+      id: 2,
+      name: "Kino - Marzec",
+      className: "Klasa 1A",
+      treasurer: "Anna Kowalska",
+      goal: 500,
+      collected: 500,
+      createdAt: "01.03.2025",
+      endDate: "20.03.2025",
+      status: "Zakończona",
+    },
+    {
+      id: 3,
+      name: "Składka na komitet",
+      className: "Klasa 8B",
+      treasurer: "Piotr Zieliński",
+      goal: 2000,
+      collected: 1850,
+      createdAt: "10.03.2025",
+      endDate: "brak",
+      status: "Aktywna",
+    },
+  ]);
+  // Wywołanie w kodzie:
+  // {activeTab === "classes" && <ClassesTab classesData={classesData} setClassesData={setClassesData} />}
   const [activeTab, setActiveTab] = useState("users");
 
   const { user } = useAuth();
@@ -364,9 +156,9 @@ const Admin = () => {
           </span>
           <span
             style={
-              activeTab === "fundraisers" ? styles.navTabActive : styles.navTab
+              activeTab === "raports" ? styles.navTabActive : styles.navTab
             }
-            onClick={() => setActiveTab("fundraisers")}
+            onClick={() => setActiveTab("raports")}
           >
             Raporty
           </span>
@@ -376,15 +168,24 @@ const Admin = () => {
         {activeTab === "users" && (
           <UsersTab users={users} setUsers={setUsers} />
         )}
-        {activeTab === "classes" && <ClassesTab classesData={classesData} />}
+        {activeTab === "classes" && (
+          <ClassesTab
+            classesData={classesData}
+            setClassesData={setClassesData}
+          />
+        )}
         {activeTab === "fundraisers" && (
-          <FundraiserTab fundraisersData={fundraisersData} />
+          <FundraiserTab
+            fundraisersData={fundraisersData}
+            setFundraisersData={setFundraisersData}
+          />
         )}
-        {activeTab === "transactions" && (
-          <TransactionTab transactionsData={transactionsData} />
-        )}
-        {activeTab === "accountancy" && (
-          <AccountingTab accountingData={accountingData} />
+        {activeTab === "raports" && (
+          <RaportTab
+            users={users}
+            classesData={classesData}
+            fundraisersData={fundraisersData}
+          />
         )}
       </div>
     </>
