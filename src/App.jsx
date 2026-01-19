@@ -5,7 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Parent from "./pages/Parent";
 import Treasurer from "./pages/Treasurer";
 import Account from "./pages/Account";
-
+import Admin from "./pages/Admin";
 const App = () => {
   return (
     <BrowserRouter>
@@ -16,6 +16,7 @@ const App = () => {
           <Route path="/parent" element={<Parent />} />
           <Route path="/treasurer" element={<Treasurer />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>
     </BrowserRouter>
