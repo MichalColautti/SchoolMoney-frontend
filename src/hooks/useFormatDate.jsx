@@ -1,13 +1,15 @@
+import { useCallback } from "react";
+
 export const useFormatDate = () => {
-    const formatToShortDateString = (date) => {
+    const formatToShortDateString = useCallback((date) => {
         return date.toLocaleDateString("pl-PL", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
         })
-    }
+    }, [])
 
-    const formatToDateString = (date) => {
+    const formatToDateString = useCallback((date) => {
         return date.toLocaleDateString("pl-PL", {
             day: "2-digit",
             month: "2-digit",
@@ -16,7 +18,7 @@ export const useFormatDate = () => {
             hour12: false,
             minute: "2-digit",
         })
-    }
+    }, [])
 
     return {
         formatToShortDateString,
