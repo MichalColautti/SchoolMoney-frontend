@@ -1,25 +1,89 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import ChatDetail from "./chatDetail";
 import SearchIcon from "../../assets/search.svg";
 import AddChatIcon from "../../assets/addChat.svg";
-
-const dummyChats = [
-  { id: 1, name: "Tom Black", message: "Gdzie? Nie mogę cię znaleźć", time: "4 min", isOnline: false },
-  { id: 2, name: "Julie", message: "Wrócę o 5", time: "47 min", isOnline: false },
-  { id: 3, name: "Sheldon", message: "Dzięki bracie.", time: "2 days", isOnline: false },
-  { id: 4, name: "France", message: "ok", time: "3 days", isOnline: false },
-  { id: 5, name: "James Leaf", message: "Ostatni termin", time: "5 days", isOnline: false },
-];
+import { AuthContext } from "../../contexts/AuthContext";
+import { getChatChannels, createChat } from "../../services/chat";
+import { findParent, REACT_APP_API_BASE_URL } from "../../services/parent";
+import { useFormatDate } from '../../hooks/useFormatDate'
 
 const ChatSidebar = ({ onClose }) => {
+  const { token, user } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [foundParents, setFoundParents] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
+  const [chats, setChats] = useState([]);
+  const { formatToDateString } = useFormatDate();
 
-  const filteredChats = dummyChats.filter(
+  useEffect(() => {
+      const handler = setTimeout(() => {
+          setDebouncedSearchTerm(searchTerm);
+      }, 1000);
+      return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  useEffect(() => {
+      if (debouncedSearchTerm.trim() && token) {
+          findParent(debouncedSearchTerm, token)
+              .then(data => setFoundParents(data))
+              .catch(console.error);
+      } else {
+          setFoundParents([]);
+      }
+  }, [debouncedSearchTerm, token]);
+
+  useEffect(() => {
+    if (token) {
+        getChatChannels(token)
+            .then(data => {
+                const mappedChats = data.map(ch => ({
+                    id: ch.channelId,
+                    name: `${ch.user.name} ${ch.user.surname}`,
+                    imageId: ch.user.imageId,
+                    message: ch.lastMessage?.textContent || (ch.lastMessage?.imageContent || ch.lastMessage?.imageId ? "Zdjęcie" : ""),
+                    time: ch.lastMessage?.createdAt ? formatToDateString(new Date(ch.lastMessage.createdAt)) : "",
+                    isOnline: false,
+                    original: ch
+                }));
+                setChats(mappedChats);
+            })
+            .catch(console.error);
+    }
+  }, [token, formatToDateString]);
+
+  const filteredChats = chats.filter(
     (chat) =>
       chat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      chat.message.toLowerCase().includes(searchTerm.toLowerCase())
+      (chat.message && chat.message.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const existingChatUserIds = chats.map(c => c.original?.user?.id);
+  const displayedFoundParents = foundParents.filter(p =>
+      p.id !== user?.id && !existingChatUserIds.includes(p.id)
+  );
+
+  const handleCreateChat = async (userId) => {
+      try {
+          const newChatData = await createChat(token, userId);
+
+          const mappedChat = {
+              id: newChatData.channelId,
+              name: `${newChatData.user.name} ${newChatData.user.surname}`,
+              imageId: newChatData.user.imageId,
+              message: newChatData.lastMessage?.textContent || (newChatData.lastMessage?.imageContent || newChatData.lastMessage?.imageId ? "Zdjęcie" : ""),
+              time: newChatData.lastMessage?.createdAt ? formatToDateString(new Date(newChatData.lastMessage.createdAt)) : "",
+              isOnline: false,
+              original: newChatData
+          };
+
+          setChats(prev => [mappedChat, ...prev]);
+          setActiveChat(mappedChat);
+          setSearchTerm(""); // Optionally clear search
+      } catch (err) {
+          console.error("Failed to create chat:", err);
+      }
+  };
 
   return (
     <>
@@ -27,8 +91,8 @@ const ChatSidebar = ({ onClose }) => {
       
       <div style={styles.chatSidebar}>
         {activeChat ? (
-          <ChatDetail 
-            chat={activeChat} 
+          <ChatDetail
+            chat={activeChat}
             onBack={() => setActiveChat(null)} 
           />
         ) : (
@@ -53,17 +117,54 @@ const ChatSidebar = ({ onClose }) => {
             <h3 style={styles.chatTitle}>Czaty</h3>
 
             <div style={styles.chatList}>
+              {displayedFoundParents.length > 0 && (
+                  <div style={{marginBottom: '16px'}}>
+                      <h4 style={{...styles.chatTitle, fontSize: '14px', marginBottom: '8px'}}>Znalezione osoby</h4>
+                      {displayedFoundParents.map((parent) => (
+                          <div
+                              key={parent.id}
+                              style={{...styles.chatItem, flexDirection: "row", alignItems: "center", marginBottom: '12px'}}
+                              onClick={() => handleCreateChat(parent.id)}
+                          >
+                                {parent.imageId ? (
+                                    <img
+                                        src={`${REACT_APP_API_BASE_URL}/image/get/${parent.imageId}`}
+                                        alt={parent.name}
+                                        style={styles.chatAvatar}
+                                    />
+                                ) : (
+                                    <div style={styles.chatAvatar} />
+                                )}
+                              <div style={{display: 'flex', flexDirection: 'column'}}>
+                                  <span style={styles.chatName}>{parent.name} {parent.surname}</span>
+                              </div>
+                          </div>
+                      ))}
+                      <div style={{borderBottom: '1px solid #eee', margin: '8px 0'}}></div>
+                  </div>
+              )}
               {filteredChats.map((chat) => (
                 <div 
                   key={chat.id} 
-                  style={styles.chatItem}
+                  style={{...styles.chatItem, flexDirection: "row", alignItems: "center"}}
                   onClick={() => setActiveChat(chat)}
                 >
-                  <div style={styles.chatInfoTop}>
-                    <span style={styles.chatName}>{chat.name}</span>
-                    <span style={styles.chatTime}>{chat.time}</span>
+                    {chat.imageId ? (
+                        <img
+                            src={`${REACT_APP_API_BASE_URL}/image/get/${chat.imageId}`}
+                            alt={chat.name}
+                            style={styles.chatAvatar}
+                        />
+                    ) : (
+                        <div style={styles.chatAvatar} />
+                    )}
+                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '4px'}}>
+                      <div style={styles.chatInfoTop}>
+                        <span style={styles.chatName}>{chat.name}</span>
+                        <span style={styles.chatTime}>{chat.time}</span>
+                      </div>
+                      <div style={styles.chatMessage}>{chat.message}</div>
                   </div>
-                  <div style={styles.chatMessage}>{chat.message}</div>
                 </div>
               ))}
             </div>
@@ -148,6 +249,15 @@ const styles = {
     gap: "4px",
     cursor: "pointer",
   },
+  chatAvatar: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    backgroundColor: "#ddd",
+    marginRight: "12px",
+    flexShrink: 0,
+  },
   chatInfoTop: {
     display: "flex",
     justifyContent: "space-between",
@@ -174,3 +284,4 @@ const styles = {
 };
 
 export default ChatSidebar;
+
