@@ -3,41 +3,55 @@ import React, {useState} from "react";
 import cancelIcon from "../../assets/cancel.svg";
 import {useOnChange} from "../../hooks/useOnChange";
 import {useAuth} from "../../contexts/AuthContext";
+import {emptyJoinClassErrors, validateJoinClass} from "../../scripts/validate/utils/validateJoinClass";
+import {joinClass} from "../../services/parent";
 
-const ClassesTab = ({classesData}) => {
+const ClassesTab = () => {
     const emptyJoinClassData = {
         childId: "",
-        joinClassLink: ""
+        accessCode: ""
     }
 
-    const emptyJoinClassErrors = {
-        name: "",
-        year: "",
-        photo: "",
-    }
+    const {data, clearData, onChangeInput} = useOnChange(emptyJoinClassData)
 
-    const {data, clearData,onChangeInput} = useOnChange(emptyJoinClassData)
+    const [errors, setErrors] = useState(emptyJoinClassErrors);
 
-    const [joinClassErrors, setJoinClassErrors] = useState(emptyJoinClassErrors);
-
-    const {user} = useAuth();
+    const {user, token, onChangeUserData, onChangeChildClass} = useAuth();
 
     const [isJoinClassModalOpen, setIsJoinClassModalOpen] = useState(false);
 
     const toggleJoinClassModal = () => setIsJoinClassModalOpen(!isJoinClassModalOpen);
 
-    const handleJoinClass = () => {
+    const handleJoinClass = async () => {
         console.log(data);
 
-        toggleJoinClassModal();
+        if(!validateJoinClass(data, setErrors)) return
 
-        clearData();
+        try {
+            const response = await joinClass(data, token);
+
+            onChangeUserData(response, 'classes');
+
+            onChangeChildClass(response.name, data.childId)
+
+            toggleJoinClassModal();
+
+            clearData();
+
+            setErrors(emptyJoinClassErrors);
+        } catch (err) {
+            switch (err.message) {
+                case "Access token does not exist":
+                    setErrors({childId: "", accessCode: "Kod jest nieprawidłowy"});
+                    break;
+            }
+        }
     };
 
     return (
         <div>
             <div style={styles.classContainer}>
-                {classesData.map((classInfo) => (
+                {user && user.classes && user.classes.length > 0 && user.classes.map((classInfo) => (
                     <ClassItem key={classInfo.id} classInfo={classInfo}/>
                 ))}
             </div>
@@ -73,12 +87,15 @@ const ClassesTab = ({classesData}) => {
                                     Wybierz dziecko
                                 </option>
                                 {
-                                    user.children && user.children.length > 0 && user.children.map((child) => (
+                                    user.children && user.children.length > 0 && user.children.filter(child => child.className === null).map((child) => (
                                     <option key={child.id} value={child.id}>
                                         {child.name}
                                     </option>
                                 ))}
                             </select>
+                            {errors.childId && (
+                                <span style={styles.errorText}>{errors.childId}</span>
+                            )}
                         </div>
 
                         <div style={styles.formGroup}>
@@ -86,11 +103,13 @@ const ClassesTab = ({classesData}) => {
                             <input
                                 type="text"
                                 style={styles.textInput}
-                                value={data.joinClassLink}
-                                onChange={(e) => onChangeInput(e.target.value, 'joinClassLink')}
+                                value={data.accessCode}
+                                onChange={(e) => onChangeInput(e.target.value, 'accessCode')}
                             />
+                            {errors.accessCode && (
+                                <span style={styles.errorText}>{errors.accessCode}</span>
+                            )}
                         </div>
-
                         <button
                             style={{...styles.button, marginTop: "24px"}}
                             onClick={handleJoinClass}

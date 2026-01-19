@@ -127,7 +127,7 @@ const ChildrenTab = () => {
                                     <img src={`${REACT_APP_API_BASE_URL}/image/get/${child.imageId}`} alt={"child-avatar"} style={styles.avatar}/>
                                 </td>
                                 <td>{child.name}</td>
-                                <td>{child.class ? child.class : "Nie przypisany"}</td>
+                                <td>{child.className !== null ? child.className : "Nie przypisany"}</td>
                                 <td>{child.birthday}</td>
                                 <td>{child.id}</td>
                                 <td>

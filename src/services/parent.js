@@ -38,3 +38,34 @@ export const addChildById = async (childId, token) => {
         }
     })
 }
+
+export const joinClass = async (AddChildToClassDto, token) => {
+    return request("/parent/join-class",{
+        method: "POST",
+        body: JSON.stringify(AddChildToClassDto),
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
+export const deleteChildFromClass = async (classId, childId, token) => {
+    const url = "/parent/delete/class/" + classId + "/child/" + childId;
+
+    return request(url, {
+        method: "POST",
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
+export const changePassword = async (dto, token) => {
+    return request("/parent/change-password",{
+        method: "POST",
+        body: JSON.stringify(dto),
+        headers: {
+            "Authorization": token
+        }
+    })
+}

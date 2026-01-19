@@ -28,6 +28,33 @@ export const AuthProvider = ({children}) => {
         }))
     }
 
+    const onDeleteFromList = (data, field) => {
+        const tempData = user[field].filter((item) => item.id !== data.id);
+
+        setUser(prev => ({
+            ...prev,
+            [field]: tempData
+        }))
+    }
+
+    const onReplaceItemInList = (data, field) => {
+        const tempData = user[field].filter((item) => item.id !== data.id);
+
+        setUser(prev => ({
+            ...prev,
+            [field]: [...tempData, data]
+        }))
+    }
+
+    const onChangeChildClass = (className, childId) => {
+        setUser(prevUser => ({
+            ...prevUser,
+            children: prevUser.children.map(child =>
+                child.id === childId ? { ...child, className: className } : child
+            )
+        }));
+    }
+
     useEffect(() => {
         if (token) {
             localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
@@ -109,7 +136,10 @@ export const AuthProvider = ({children}) => {
             register,
             logout,
             onChangeUserData,
-            onAppendToList
+            onAppendToList,
+            onReplaceItemInList,
+            onDeleteFromList,
+            onChangeChildClass
         }),
         [token, user, error, loading, login, register, logout]
     );
