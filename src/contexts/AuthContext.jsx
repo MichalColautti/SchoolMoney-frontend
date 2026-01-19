@@ -2,9 +2,9 @@ import React, {createContext, useCallback, useContext, useEffect, useMemo, useSt
 import {loginRequest, logoutRequest, registerRequest} from "../services/auth";
 import {validateRegisterPassword} from "../scripts/validate/validateRegisterPassword";
 
-const AuthContext = createContext(undefined, undefined);
+export const AuthContext = createContext(undefined, undefined);
 
-const LOCAL_STORAGE_TOKEN_KEY = "";
+const LOCAL_STORAGE_TOKEN_KEY = "token";
 
 export const AuthProvider = ({children}) => {
     const [token, setToken] = useState(() => localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY));
