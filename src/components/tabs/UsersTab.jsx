@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import cancelIcon from "../../assets/cancel.svg";
+import { changeBlockStatus } from "../../services/parent";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const UsersTab = ({ users, setUsers }) => {
+  const { token } = useContext(AuthContext);
   const [filter, setFilter] = useState("Wszyscy");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,7 +13,6 @@ const UsersTab = ({ users, setUsers }) => {
   const filteredUsers = users.filter((u) => {
     if (filter === "Wszyscy") return true;
     if (filter === "Skarbnicy") return u.role === "Skarbnik";
-    if (filter === "Admini") return u.role === "Admin";
     if (filter === "Rodzice") return u.role === "Rodzic";
     return true;
   });
@@ -20,14 +22,22 @@ const UsersTab = ({ users, setUsers }) => {
     setIsModalOpen(true);
   };
 
-  const handleConfirmAction = () => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === selectedUser.id
-          ? { ...u, status: u.status === "Aktywny" ? "Zablokowany" : "Aktywny" }
-          : u,
-      ),
-    );
+  const handleConfirmAction = async () => {
+    const isLocked = selectedUser.status === "Aktywny";
+    try {
+      await changeBlockStatus(selectedUser.id, isLocked, token);
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === selectedUser.id
+            ? { ...u, status: isLocked ? "Zablokowany" : "Aktywny" }
+            : u,
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to change user status:", error);
+    }
+
     setIsModalOpen(false);
     setSelectedUser(null);
   };
@@ -47,7 +57,7 @@ const UsersTab = ({ users, setUsers }) => {
             </div>
             {isDropdownOpen && (
               <div style={styles.menu}>
-                {["Wszyscy", "Skarbnicy", "Admini", "Rodzice"].map((opt) => (
+                {["Wszyscy", "Skarbnicy", "Rodzice"].map((opt) => (
                   <div
                     key={opt}
                     style={styles.menuItem}
@@ -80,7 +90,7 @@ const UsersTab = ({ users, setUsers }) => {
           </thead>
           <tbody>
             {filteredUsers.map((u) => {
-              const isActive = u.status === "Aktywny";
+              const blocked = u.status === "Aktywny";
               return (
                 <tr key={u.id} style={styles.tr}>
                   <td style={styles.td}>
@@ -94,7 +104,7 @@ const UsersTab = ({ users, setUsers }) => {
                     <div
                       style={{
                         ...styles.badge,
-                        backgroundColor: isActive ? "#63FF63" : "#FF5C5C",
+                        backgroundColor: blocked ? "#63FF63" : "#FF5C5C",
                       }}
                     >
                       {u.status}
@@ -106,10 +116,10 @@ const UsersTab = ({ users, setUsers }) => {
                       onClick={() => openConfirmModal(u)}
                       style={{
                         ...styles.btnAction,
-                        backgroundColor: isActive ? "#FF5C5C" : "#63FF63",
+                        backgroundColor: blocked ? "#FF5C5C" : "#63FF63",
                       }}
                     >
-                      {isActive ? "Zablokuj" : "Odblokuj"}
+                      {blocked ? "Zablokuj" : "Odblokuj"}
                     </button>
                   </td>
                 </tr>

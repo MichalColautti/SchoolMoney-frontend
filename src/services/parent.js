@@ -25,7 +25,12 @@ const request = async (path, options = {}) => {
         throw new Error(errorMessage);
     }
 
-    return response.json();
+    const responseText = await response.text();
+    if(!responseText){
+        return null;
+    }
+    return JSON.parse(responseText);
+
 };
 
 export const addChild = async (data, token) => {
@@ -71,7 +76,25 @@ export const findParent = async (name, token, limit = 5) => {
     return request(`/find?name=${encodeURIComponent(name)}&limit=${limit}`, {
         method: "GET",
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: token
+        }
+    });
+};
+
+export const getAllParents = async (token) => {
+    return request("/get-all", {
+        method: "GET",
+        headers: {
+            Authorization: token
+        }
+    });
+};
+
+export const changeBlockStatus = async (parentId, isLocked, token) => {
+    return request(`/${parentId}/status?isLocked=${isLocked}`, {
+        method: "PATCH",
+        headers: {
+            Authorization: token
         }
     });
 };

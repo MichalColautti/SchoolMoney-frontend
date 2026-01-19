@@ -4,120 +4,76 @@ import UsersTab from "../components/tabs/UsersTab";
 import ClassesTab from "../components/tabs/ClassesTabAdmin";
 import FundraiserTab from "../components/tabs/FundraiserTabAdmin";
 import RaportTab from "../components/tabs/RaportTab";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllParents } from "../services/parent";
+import { getAllClasses } from "../services/schoolClass";
+import { getAllFundraisers } from "../services/fundraising";
+import { useFormatDate } from "../hooks/useFormatDate";
 
 import { useAuth } from "../contexts/AuthContext";
 
 const Admin = () => {
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Adam Mahaj",
-      email: "adam@gmail.com",
-      status: "Aktywny",
-      createdAt: "07.03.2025",
-      role: "Rodzic",
-    },
-    {
-      id: 2,
-      name: "Marek Nowak",
-      email: "marek@gmail.com",
-      status: "Aktywny",
-      createdAt: "05.03.2025",
-      role: "Skarbnik",
-    },
-    {
-      id: 3,
-      name: "Anna Kowalska",
-      email: "ania@gmail.com",
-      status: "Zablokowany",
-      createdAt: "01.03.2025",
-      role: "Admin",
-    },
-    {
-      id: 4,
-      name: "Piotr Zieliński",
-      email: "piotr@gmail.com",
-      status: "Aktywny",
-      createdAt: "10.03.2025",
-      role: "Skarbnik",
-    },
-  ]);
-  const [classesData, setClassesData] = useState([
-    {
-      id: 1,
-      name: "Klasa 4C",
-      year: "2024/2025",
-      openCollections: 3,
-      closedCollections: 12,
-      studentsCount: 25,
-      treasurerName: "Marek Nowak",
-      uid: "CLS-9921",
-      status: "Aktywna",
-    },
-    {
-      id: 2,
-      name: "Klasa 1A",
-      year: "2023/2024",
-      openCollections: 0,
-      closedCollections: 15,
-      studentsCount: 20,
-      treasurerName: "Anna Kowalska",
-      uid: "CLS-4452",
-      status: "Zablokowana",
-    },
-    {
-      id: 3,
-      name: "Klasa 8B",
-      year: "2025/2026",
-      openCollections: 5,
-      closedCollections: 2,
-      studentsCount: 30,
-      treasurerName: "Piotr Zieliński",
-      uid: "CLS-0012",
-      status: "Aktywna",
-    },
-  ]);
-  const [fundraisersData, setFundraisersData] = useState([
-    {
-      id: 1,
-      name: "Wycieczka do Warszawy",
-      className: "Klasa 4C",
-      treasurer: "Marek Nowak",
-      goal: 4000,
-      collected: 2300,
-      createdAt: "07.03.2025",
-      endDate: "brak",
-      status: "Aktywna",
-    },
-    {
-      id: 2,
-      name: "Kino - Marzec",
-      className: "Klasa 1A",
-      treasurer: "Anna Kowalska",
-      goal: 500,
-      collected: 500,
-      createdAt: "01.03.2025",
-      endDate: "20.03.2025",
-      status: "Zakończona",
-    },
-    {
-      id: 3,
-      name: "Składka na komitet",
-      className: "Klasa 8B",
-      treasurer: "Piotr Zieliński",
-      goal: 2000,
-      collected: 1850,
-      createdAt: "10.03.2025",
-      endDate: "brak",
-      status: "Aktywna",
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [classesData, setClassesData] = useState([]);
+  const [fundraisersData, setFundraisersData] = useState([]);
   // Wywołanie w kodzie:
   // {activeTab === "classes" && <ClassesTab classesData={classesData} setClassesData={setClassesData} />}
   const [activeTab, setActiveTab] = useState("users");
 
-  const { user } = useAuth();
+  const { token } = useAuth();
+  const { formatToDateString } = useFormatDate();
+
+  useEffect(() => {
+    if(token) {
+        getAllParents(token)
+            .then(data => {
+                const mappedUsers = data.map(u => ({
+                    id: u.id,
+                    name: `${u.name} ${u.surname}`,
+                    email: u.email,
+                    status: u.blocked ? "Zablokowany" : "Aktywny",
+                    createdAt: u.createdAt ? formatToDateString(new Date(u.createdAt)) : "-",
+                    role: u.role === "TREASURER" ? "Skarbnik" : (u.role === "ADMIN" ? "Admin" : "Rodzic")
+                }));
+                setUsers(mappedUsers);
+            })
+            .catch(console.error);
+
+        getAllClasses(token)
+            .then(data => {
+                const mappedClasses = data.map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    year: c.year,
+                    openCollections: c.openCollections,
+                    allCollections: c.allCollections,
+                    studentsCount: c.childrenCount,
+                    treasurerName: c.classTreasurerName,
+                    uid: c.id,
+                    status: c.blocked ? "Aktywna" : "Zablokowana",
+                }));
+                setClassesData(mappedClasses);
+            })
+            .catch(console.error);
+
+        getAllFundraisers(token)
+            .then(data => {
+                const mappedFundraisers = data.map(f => ({
+                    id: f.id,
+                    name: f.name,
+                    className: f.className,
+                    treasurer: f.classTreasurerName,
+                    goal: f.amount,
+                    collected: f.amountCollected,
+                    createdAt: f.startDate ? formatToDateString(new Date(f.startDate)) : "-",
+                    endDate: f.endDate ? formatToDateString(new Date(f.endDate)) : "brak",
+                    status: f.status === "active" ? "Aktywna" : "Zakończona",
+                }));
+                setFundraisersData(mappedFundraisers);
+            })
+            .catch(console.error);
+    }
+  }, [token, formatToDateString]);
 
   return (
     <>
@@ -125,9 +81,9 @@ const Admin = () => {
       <div style={styles.container}>
         {/* Stats */}
         <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-          <Panel title="Wszyscy użytkownicy" value="250" />
-          <Panel title="Skarbnicy" value="10" />
-          <Panel title="Transakcje" value="5" />
+          <Panel title="Wszyscy użytkownicy" value={users.length} />
+          <Panel title="Skarbnicy" value={users.filter(user => user.role==="Skarbnik").length} />
+          <Panel title="Zbiórki" value={fundraisersData.length} />
         </div>
 
         {/* Nav */}

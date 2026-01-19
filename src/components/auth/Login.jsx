@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../contexts/AuthContext";
 import {useOnChange} from "../../hooks/useOnChange";
 
-const Login = () => {
+const Login = ({ redirectPath = "/parent", loginEndpoint }) => {
     const emptyUserCredentials = {
         email: "",
         password: "",
@@ -24,15 +24,15 @@ const Login = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate("/parent");
+            navigate(redirectPath);
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, redirectPath]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(data);
         try{
-            await login(data);
+            await login(data, loginEndpoint);
         }
         catch(err){
             console.error("Login failed", err);

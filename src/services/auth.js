@@ -35,8 +35,8 @@ export const authorizedRequest = async (path, token, options = {}) =>
     });
 
 
-export const loginRequest = async (credentials) =>
-    request("/auth/login", {
+export const loginRequest = async (credentials, endpoint = "/auth/login") =>
+    request(endpoint, {
         method: "POST",
         body: JSON.stringify(credentials),
     });

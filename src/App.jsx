@@ -6,12 +6,14 @@ import Parent from "./pages/Parent";
 import Treasurer from "./pages/Treasurer";
 import Account from "./pages/Account";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/auth" />} />
         <Route path="/auth" element={<AuthTabs />} />
+        <Route path="/admin-auth" element={<AdminLogin />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/parent" element={<Parent />} />
           <Route path="/treasurer" element={<Treasurer />} />

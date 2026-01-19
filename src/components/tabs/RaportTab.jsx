@@ -9,7 +9,6 @@ const RaportTab = ({ users, classesData, fundraisersData }) => {
       total: users?.length || 0,
       rodzice: users?.filter((u) => u.role === "Rodzic").length || 0,
       skarbnicy: users?.filter((u) => u.role === "Skarbnik").length || 0,
-      admini: users?.filter((u) => u.role === "Admin").length || 0,
       zablokowani: users?.filter((u) => u.status === "Zablokowany").length || 0,
     },
     klasy: {
@@ -91,7 +90,7 @@ const RaportTab = ({ users, classesData, fundraisersData }) => {
       c.name,
       c.year || "2024/2025",
       c.studentsCount,
-      c.skarbnik || "Nie przypisano",
+      c.treasurerName || "Nie przypisano",
       c.status,
     ]);
 

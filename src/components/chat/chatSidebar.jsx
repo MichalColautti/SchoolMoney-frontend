@@ -109,9 +109,6 @@ const ChatSidebar = ({ onClose }) => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <button style={styles.addChatBtn}>
-                <img src={AddChatIcon} alt="new chat" width="24" height="24" />
-              </button>
             </div>
 
             <h3 style={styles.chatTitle}>Czaty</h3>

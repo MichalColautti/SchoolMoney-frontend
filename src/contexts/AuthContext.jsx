@@ -37,11 +37,11 @@ export const AuthProvider = ({children}) => {
     );
 
     const login = useCallback(
-        async (credentials) => {
+        async (credentials, endpoint) => {
             setLoading(true);
             setError(null);
             try {
-                const payload = await loginRequest(credentials);
+                const payload = await loginRequest(credentials, endpoint);
                 handleAuthSuccess(payload);
             } catch (err) {
                 setError(err.message);
