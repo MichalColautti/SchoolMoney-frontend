@@ -26,3 +26,14 @@ export async function addClass(data, token) {
         throw err;
     }
 }
+
+export const deleteChildFromClass = async (classId, childId, token) => {
+    const url = `/treasurer/delete-child-from-class/class/${classId}/child/${childId}`;
+
+    return request(url, {
+        method: 'POST',
+        headers: {
+            "Authorization": token
+        }
+    })
+}

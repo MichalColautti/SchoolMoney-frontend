@@ -1,10 +1,11 @@
 import ClassItem from "../items/ClassItem";
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import cancelIcon from "../../assets/cancel.svg";
 import {useOnChange} from "../../hooks/useOnChange";
 import {useAuth} from "../../contexts/AuthContext";
-import {emptyJoinClassErrors, validateJoinClass} from "../../scripts/validate/utils/validateJoinClass";
+import {emptyJoinClassErrors, validateJoinClass} from "../../scripts/validate/validateJoinClass";
 import {joinClass} from "../../services/parent";
+import {useUserData} from "../../contexts/UserDataContext";
 
 const ClassesTab = () => {
     const emptyJoinClassData = {
@@ -16,7 +17,8 @@ const ClassesTab = () => {
 
     const [errors, setErrors] = useState(emptyJoinClassErrors);
 
-    const {user, token, onChangeUserData, onChangeChildClass} = useAuth();
+    const {token} = useAuth();
+    const {user, onReplaceItemInList, onChangeChildClass} = useUserData();
 
     const [isJoinClassModalOpen, setIsJoinClassModalOpen] = useState(false);
 
@@ -30,7 +32,7 @@ const ClassesTab = () => {
         try {
             const response = await joinClass(data, token);
 
-            onChangeUserData(response, 'classes');
+            onReplaceItemInList(response, 'classes');
 
             onChangeChildClass(response.name, data.childId)
 
@@ -48,10 +50,18 @@ const ClassesTab = () => {
         }
     };
 
+    const classesWithMyChildren = useMemo(() => {
+        if (!user?.classes) return [];
+
+        return user.classes.filter(classInfo =>
+            classInfo.children?.some(child => child.isMyChild)
+        );
+    }, [user?.classes]);
+
     return (
         <div>
             <div style={styles.classContainer}>
-                {user && user.classes && user.classes.length > 0 && user.classes.map((classInfo) => (
+                {classesWithMyChildren.length > 0 && classesWithMyChildren.map((classInfo) => (
                     <ClassItem key={classInfo.id} classInfo={classInfo}/>
                 ))}
             </div>
@@ -89,7 +99,7 @@ const ClassesTab = () => {
                                 {
                                     user.children && user.children.length > 0 && user.children.filter(child => child.className === null).map((child) => (
                                     <option key={child.id} value={child.id}>
-                                        {child.name}
+                                        {`${child.name} ${child.surname}`}
                                     </option>
                                 ))}
                             </select>

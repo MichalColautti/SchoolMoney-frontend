@@ -25,5 +25,17 @@ export const request = async (path, options = {}) => {
         throw new Error(errorMessage);
     }
 
-    return response.json();
+    if (response.status === 204 || response.headers.get("content-length") === "0") {
+        return null;
+    }
+
+    const text = await response.text();
+
+    if (!text) return null;
+
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        return text;
+    }
 };

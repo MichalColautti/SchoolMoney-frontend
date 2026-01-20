@@ -3,6 +3,7 @@ import TrashcanIcon from "../../assets/trashcan.svg";
 import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
 import {useAuth} from "../../contexts/AuthContext";
 import {deleteChildFromClass} from "../../services/parent";
+import {useUserData} from "../../contexts/UserDataContext";
 
 const ClassItem = ({classInfo}) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -11,7 +12,8 @@ const ClassItem = ({classInfo}) => {
         setIsExpanded(!isExpanded);
     };
 
-    const {onReplaceItemInList, onDeleteFromList, token, onChangeChildClass} = useAuth();
+    const {token} = useAuth();
+    const {onReplaceItemInList, onDeleteFromList, onChangeChildClass} = useUserData();
 
     const {name, year, fundraisers, children, imageId, id} = classInfo;
 
@@ -22,10 +24,14 @@ const ClassItem = ({classInfo}) => {
 
             const hasRemainingChildren = response.children.some(child => child.isMyChild);
 
+            console.log(response)
+
             if (hasRemainingChildren) {
                 onReplaceItemInList(response, 'classes');
+                console.log("1")
             } else {
                 onDeleteFromList(response, 'classes');
+                console.log("1")
             }
 
             onChangeChildClass(null, childId)
@@ -96,9 +102,9 @@ const ClassItem = ({classInfo}) => {
                             student.isMyChild === true &&
                             <div key={student.id} style={styles.studentItem}>
                                 <div style={styles.studentInfo}>
-                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${student.imageId}`}
+                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${student.imageId}?t=${new Date().getTime()}`}
                                          alt={"child-avatar"} style={styles.kidImage}/>
-                                    <span>{student.name}</span>
+                                    <span>{`${student.name} ${student.surname}`}</span>
                                 </div>
                                 <img
                                     src={`${TrashcanIcon}`}

@@ -1,6 +1,7 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {loginRequest, logoutRequest, registerRequest} from "../services/auth";
 import {validateRegisterPassword} from "../scripts/validate/validateRegisterPassword";
+import {useUserData} from "./UserDataContext";
 
 const AuthContext = createContext(undefined, undefined);
 
@@ -8,52 +9,10 @@ const LOCAL_STORAGE_TOKEN_KEY = "";
 
 export const AuthProvider = ({children}) => {
     const [token, setToken] = useState(() => localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY));
-    const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const onChangeUserData = (data, field) => {
-        setUser((prev) => ({
-            ...prev,
-            [field]: data,
-        }))
-    }
-
-    const onAppendToList = (data, field) => {
-        const tempData = user[field];
-
-        setUser(prev => ({
-            ...prev,
-            [field]: [...tempData, data]
-        }))
-    }
-
-    const onDeleteFromList = (data, field) => {
-        const tempData = user[field].filter((item) => item.id !== data.id);
-
-        setUser(prev => ({
-            ...prev,
-            [field]: tempData
-        }))
-    }
-
-    const onReplaceItemInList = (data, field) => {
-        const tempData = user[field].filter((item) => item.id !== data.id);
-
-        setUser(prev => ({
-            ...prev,
-            [field]: [...tempData, data]
-        }))
-    }
-
-    const onChangeChildClass = (className, childId) => {
-        setUser(prevUser => ({
-            ...prevUser,
-            children: prevUser.children.map(child =>
-                child.id === childId ? { ...child, className: className } : child
-            )
-        }));
-    }
+    const {onSetUser, onClearUser} = useUserData();
 
     useEffect(() => {
         if (token) {
@@ -67,9 +26,9 @@ export const AuthProvider = ({children}) => {
         (payload) => {
             setToken("Bearer " + payload.loginToken.substring(7) || "");
             payload.loginToken = "";
-            setUser(payload || null);
+            onSetUser(payload || null);
         },
-        [setToken, setUser]
+        [setToken, onSetUser]
     );
 
     const login = useCallback(
@@ -120,7 +79,7 @@ export const AuthProvider = ({children}) => {
                 throw err;
             } finally {
                 setToken(null);
-                setUser(null);
+                onClearUser();
                 setLoading(false);
             }
         }, [token]);
@@ -129,19 +88,13 @@ export const AuthProvider = ({children}) => {
         () => ({
             isAuthenticated: Boolean(token),
             token,
-            user,
             error,
             loading,
             login,
             register,
-            logout,
-            onChangeUserData,
-            onAppendToList,
-            onReplaceItemInList,
-            onDeleteFromList,
-            onChangeChildClass
+            logout
         }),
-        [token, user, error, loading, login, register, logout]
+        [token, error, loading, login, register, logout]
     );
 
     return (

@@ -7,6 +7,7 @@ import UploadFileIcon from "../../assets/upload.svg";
 import {emptyAddClassErrors, validateAddClass} from "../../scripts/validate/validateAddClass";
 import {useAuth} from "../../contexts/AuthContext";
 import {addClass} from "../../services/treasurer";
+import {useUserData} from "../../contexts/UserDataContext";
 
 const MyClassesTab = () => {
     const emptyAddClassData = {
@@ -19,7 +20,9 @@ const MyClassesTab = () => {
 
     const {data: errors, clearData: clearErrors, onChangeInput: onChangeError} = useOnChange(emptyAddClassErrors);
 
-    const {token, onAppendToList, user} = useAuth();
+    const {token} = useAuth();
+
+    const {onAppendToList, user} = useUserData();
 
     const fileInputRef = useRef(null);
 
@@ -53,7 +56,7 @@ const MyClassesTab = () => {
         <div>
             {/* Class container */}
             <div style={styles.classContainer}>
-                {user && user.classes.length > 0 && user.classes.map((classInfo) => (
+                {user && user.classes.length > 0 && user.classes.filter(c => c.isTreasurer === true).map((classInfo) => (
                     <MyClassItem key={classInfo.id} classInfo={classInfo}/>
                 ))}
             </div>

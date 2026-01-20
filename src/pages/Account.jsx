@@ -37,13 +37,15 @@ const Account = () => {
             return;
 
         try {
+            console.log("XD")
             await changePassword(data, token);
 
+            console.log(data);
             clearData()
-
+            console.log(data);
             setErrors(emptyChangePasswordErrors)
-
             logout()
+            console.log(data);
         } catch (err) {
             switch (err) {
                 case "Invalid old password":
@@ -52,6 +54,7 @@ const Account = () => {
                         oldPassword: "Niepoprawne hasło"
                     }))
             }
+            console.log(err);
         }
     }
 

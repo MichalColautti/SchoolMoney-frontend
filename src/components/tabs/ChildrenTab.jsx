@@ -5,11 +5,13 @@ import UploadFileIcon from "../../assets/upload.svg";
 import {useOnChange} from "../../hooks/useOnChange";
 import {emptyChildDataErrors, validateAddChild} from "../../scripts/validate/validateAddChild";
 import {useFormatDate} from "../../hooks/useFormatDate";
-import {addChild, addChildById} from "../../services/parent";
+import {addChild, addChildById, deleteChild, editChild} from "../../services/parent";
 
 import {useAuth} from "../../contexts/AuthContext";
 import {validateAddExistingChild} from "../../scripts/validate/validateAddExistingChild";
 import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
+import {useUserData} from "../../contexts/UserDataContext";
+import {validateEditChild} from "../../scripts/validate/utils/validateEditChild";
 
 const ChildrenTab = () => {
     const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
@@ -21,11 +23,13 @@ const ChildrenTab = () => {
         photo: null,
     }
 
-    const {onChangeInput, data, clearData} = useOnChange(emptyChildData)
+    const {onChangeInput, data, clearData, setData} = useOnChange(emptyChildData)
 
-    const {formatToShortDateString} = useFormatDate();
+    const {formatToShortDateString, parseDate} = useFormatDate();
 
-    const {token, user, onChangeUserData} = useAuth();
+    const {token} = useAuth();
+
+    const {user, onChangeUserData, onReplaceItemInList, onEditChildInClass, onDeleteChild} = useUserData();
     //Add new child Errors
     const [formErrors, setFormErrors] = useState(emptyChildDataErrors);
 
@@ -47,6 +51,49 @@ const ChildrenTab = () => {
         setIsAddExistingKidModalOpen(!isAddExistingKidModalOpen);
         setExistingKidError("");
         setChildId("");
+    }
+
+    const [isEditing, setIsEditing] = useState(false);
+
+    const handleOnEdit = (child) => {
+        setIsEditing(true);
+
+        setData({
+            id: child.id,
+            name: child.name,
+            surname: child.surname,
+            birthday: parseDate(child.birthday),
+            photo: null,
+        })
+
+        console.log(data);
+
+        setFormErrors(emptyChildDataErrors)
+
+        toggleAddKidModal()
+    }
+
+    const handleEditChild = async () => {
+        if(!validateEditChild(data, setFormErrors)) return;
+
+        try{
+            const response = await editChild(data, token);
+
+            onReplaceItemInList(response, "children")
+
+            onEditChildInClass(response.name, response.surname, response.id)
+
+            setFormErrors(emptyChildDataErrors)
+
+            clearData()
+
+            setIsEditing(false);
+
+            toggleAddKidModal()
+        }
+        catch(err){
+            console.log(err);
+        }
     }
 
     const handleFileChange = (e) => {
@@ -76,6 +123,17 @@ const ChildrenTab = () => {
         }
     };
 
+    const handleDeleteChild = async (childId) => {
+        try{
+            await deleteChild(childId, token);
+
+            onDeleteChild(childId)
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
     const handleAddExistingChild = async () => {
         if (!validateAddExistingChild(childId)) {
             setExistingKidError("UID jest wymagane!");
@@ -89,6 +147,7 @@ const ChildrenTab = () => {
             toggleAddExistingKidModal();
 
             setChildId("")
+
             setExistingKidError("")
         } catch (err) {
             switch (err.message) {
@@ -124,17 +183,17 @@ const ChildrenTab = () => {
                         user && user.children && user.children.map((child) => (
                             <tr key={child.id} style={{height: 48}}>
                                 <td>
-                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${child.imageId}`} alt={"child-avatar"} style={styles.avatar}/>
+                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${child.imageId}?t=${new Date().getTime()}`} alt={"child-avatar"} style={styles.avatar}/>
                                 </td>
-                                <td>{child.name}</td>
+                                <td>{`${child.name} ${child.surname}`}</td>
                                 <td>{child.className !== null ? child.className : "Nie przypisany"}</td>
                                 <td>{child.birthday}</td>
                                 <td>{child.id}</td>
                                 <td>
-                  <span style={{cursor: "pointer", marginRight: 8}}>
+                  <span style={{cursor: "pointer", marginRight: 8}} onClick={() => handleOnEdit(child)}>
                     edytuj
                   </span>
-                                    <span style={{cursor: "pointer"}}>usuń</span>
+                                    <span style={{cursor: "pointer"}} onClick={() => handleDeleteChild(child.id)}>usuń</span>
                                 </td>
                             </tr>
                         ))
@@ -287,8 +346,10 @@ const ChildrenTab = () => {
 
                         {/* Footer */}
                         <div style={styles.modalFooter}>
-                            <button onClick={handleAddChild} style={styles.submitButton}>
-                                Dodaj dziecko
+                            <button onClick={isEditing ? handleEditChild : handleAddChild} style={styles.submitButton}>
+                                {
+                                    isEditing ? "Zapisz zmiany" : "Dodaj dziecko"
+                                }
                             </button>
                         </div>
                     </div>
@@ -366,7 +427,6 @@ const styles = {
         width: 32,
         height: 32,
         borderRadius: "50%",
-        background: "#2b7fff",
     },
     tableConatiner: {
         width: "100%",

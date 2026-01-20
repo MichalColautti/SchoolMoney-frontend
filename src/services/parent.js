@@ -69,3 +69,46 @@ export const changePassword = async (dto, token) => {
         }
     })
 }
+
+export const editChild = async (data, token) => {
+    try{
+        const formData = new FormData();
+
+        const addChildDto = {
+            id: data.id,
+            name: data.name,
+            surname: data.surname,
+            birthday: data.birthday.toISOString().split('T')[0],
+        }
+
+        formData.append('editChildDto', new Blob([JSON.stringify(addChildDto)], {
+            type: 'application/json'
+        }));
+
+        if(data.photo){
+            formData.append('childPhoto', data.photo);
+        }
+
+        return request("/parent/edit-child",{
+            method: "POST",
+            body: formData,
+            headers: {
+                "Authorization": token
+            }
+        })
+    }
+    catch(err){
+        throw err;
+    }
+}
+
+export const deleteChild = async (childId, token) => {
+    const url = "/parent/delete-child/" + childId;
+
+    return request(url,{
+        method: "POST",
+        headers: {
+            "Authorization": token
+        }
+    })
+}

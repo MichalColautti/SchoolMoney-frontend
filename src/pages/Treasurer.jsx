@@ -5,7 +5,7 @@ import AccountingTab from "../components/tabs/AccountingTab";
 import FundraiserTab from "../components/tabs/FundraiserTab";
 import MyClassesTab from "../components/tabs/MyClassesTab";
 import { useState } from "react";
-import {useAuth} from "../contexts/AuthContext";
+import {useUserData} from "../contexts/UserDataContext";
 
 const classesData = [
   {
@@ -275,7 +275,7 @@ Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, k
 const Treasurer = () => {
   const [activeTab, setActiveTab] = useState("myclasses");
 
-  const {user} = useAuth();
+  const {user} = useUserData();
 
   return (
     <>

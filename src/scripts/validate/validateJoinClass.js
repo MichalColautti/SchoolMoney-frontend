@@ -1,4 +1,4 @@
-import {isNullOrEmpty} from "./isNullOrEmpty";
+import {isNullOrEmpty} from "./utils/isNullOrEmpty";
 
 export const emptyJoinClassErrors = {
     childId: "",
