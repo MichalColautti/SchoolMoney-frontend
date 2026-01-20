@@ -1,6 +1,7 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {loginRequest, logoutRequest, registerRequest} from "../services/auth";
 import {validateRegisterPassword} from "../scripts/validate/validateRegisterPassword";
+import {useUserData} from "./UserDataContext";
 
 export const AuthContext = createContext(undefined, undefined);
 
@@ -8,16 +9,10 @@ const LOCAL_STORAGE_TOKEN_KEY = "token";
 
 export const AuthProvider = ({children}) => {
     const [token, setToken] = useState(() => localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY));
-    const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const onChangeUserData = (data, field) => {
-        setUser((prev) => ({
-            ...prev,
-            [field]: data,
-        }))
-    }
+    const {onSetUser, onClearUser} = useUserData();
 
     useEffect(() => {
         if (token) {
@@ -31,9 +26,9 @@ export const AuthProvider = ({children}) => {
         (payload) => {
             setToken("Bearer " + payload.loginToken.substring(7) || "");
             payload.loginToken = "";
-            setUser(payload || null);
+            onSetUser(payload || null);
         },
-        [setToken, setUser]
+        [setToken, onSetUser]
     );
 
     const login = useCallback(
@@ -84,7 +79,7 @@ export const AuthProvider = ({children}) => {
                 throw err;
             } finally {
                 setToken(null);
-                setUser(null);
+                onClearUser();
                 setLoading(false);
             }
         }, [token]);
@@ -93,15 +88,13 @@ export const AuthProvider = ({children}) => {
         () => ({
             isAuthenticated: Boolean(token),
             token,
-            user,
             error,
             loading,
             login,
             register,
-            logout,
-            onChangeUserData
+            logout
         }),
-        [token, user, error, loading, login, register, logout]
+        [token, error, loading, login, register, logout]
     );
 
     return (
