@@ -40,7 +40,7 @@ export const addChildById = async (childId, token) => {
 }
 
 export const findParent = async (name, token, limit = 5) => {
-    return request(`/find?name=${encodeURIComponent(name)}&limit=${limit}`, {
+    return request(`/parent/find?name=${encodeURIComponent(name)}&limit=${limit}`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${token}`

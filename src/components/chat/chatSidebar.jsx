@@ -7,6 +7,8 @@ import { getChatChannels, createChat } from "../../services/chat";
 import { findParent,  } from "../../services/parent";
 import { useFormatDate } from '../../hooks/useFormatDate'
 import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client/dist/sockjs";
 
 const ChatSidebar = ({ onClose }) => {
   const { token, user } = useAuth();
@@ -16,9 +18,10 @@ const ChatSidebar = ({ onClose }) => {
   const [activeChat, setActiveChat] = useState(null);
   const [chats, setChats] = useState([]);
   const { formatToDateString } = useFormatDate();
+  const [stompClient, setStompClient] = useState(null);
 
   useEffect(() => {
-      const handler = setTimeout(() => {
+    const handler = setTimeout(() => {
           setDebouncedSearchTerm(searchTerm);
       }, 1000);
       return () => clearTimeout(handler);
@@ -51,6 +54,57 @@ const ChatSidebar = ({ onClose }) => {
             })
             .catch(console.error);
     }
+  }, [token, formatToDateString]);
+
+  useEffect(() => {
+      if (!token) return;
+
+      const client = new Client({
+          webSocketFactory: () => new SockJS("http://localhost:4000/ws"),
+          connectHeaders: {
+              Authorization: token,
+          },
+          reconnectDelay: 5000,
+          onConnect: () => {
+              setStompClient(client);
+
+              client.subscribe(`/user/queue/messages`, (message) => {
+                  if (message.body) {
+                      const apiMsg = JSON.parse(message.body);
+                      setChats(prevChats => {
+                          const chatId = apiMsg.chatId;
+                          const chatIndex = prevChats.findIndex(c => c.id === chatId);
+
+                          if (chatIndex !== -1) {
+                              const newChats = [...prevChats];
+                              const [chat] = newChats.splice(chatIndex, 1);
+
+                              const updatedChat = {
+                                  ...chat,
+                                  message: apiMsg.textContent || (apiMsg.imageContent || apiMsg.imageId ? "Zdjęcie" : ""),
+                                  time: apiMsg.createdAt ? formatToDateString(new Date(apiMsg.createdAt)) : "",
+                                  original: {
+                                      ...chat.original,
+                                      lastMessage: apiMsg
+                                  }
+                              };
+
+                              newChats.unshift(updatedChat);
+                              return newChats;
+                          }
+                          return prevChats;
+                      });
+                  }
+              });
+          },
+      });
+
+      client.activate();
+
+      return () => {
+          client.deactivate();
+          setStompClient(null);
+      };
   }, [token, formatToDateString]);
 
   const filteredChats = chats.filter(
@@ -94,7 +148,8 @@ const ChatSidebar = ({ onClose }) => {
         {activeChat ? (
           <ChatDetail
             chat={activeChat}
-            onBack={() => setActiveChat(null)} 
+            stompClient={stompClient}
+            onBack={() => setActiveChat(null)}
           />
         ) : (
           <>
