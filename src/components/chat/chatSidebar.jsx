@@ -1,14 +1,15 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import ChatDetail from "./chatDetail";
 import SearchIcon from "../../assets/search.svg";
 import AddChatIcon from "../../assets/addChat.svg";
-import { AuthContext } from "../../contexts/AuthContext";
+import {useAuth} from "../../contexts/AuthContext";
 import { getChatChannels, createChat } from "../../services/chat";
-import { findParent, REACT_APP_API_BASE_URL } from "../../services/parent";
+import { findParent,  } from "../../services/parent";
 import { useFormatDate } from '../../hooks/useFormatDate'
+import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
 
 const ChatSidebar = ({ onClose }) => {
-  const { token, user } = useContext(AuthContext);
+  const { token, user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [foundParents, setFoundParents] = useState([]);
