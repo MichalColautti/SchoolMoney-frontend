@@ -16,7 +16,7 @@ export const addChild = async (data, token) => {
 
         formData.append('childPhoto', data.photo);
 
-        return request("/parent/add-child",{
+        return request("/add-child",{
             method: "POST",
             body: formData,
             headers: {
@@ -30,7 +30,7 @@ export const addChild = async (data, token) => {
 }
 
 export const addChildById = async (childId, token) => {
-    return request("/parent/add-child-by-id",{
+    return request("/add-child-by-id",{
         method: "POST",
         body: JSON.stringify(childId),
         headers: {
@@ -38,6 +38,16 @@ export const addChildById = async (childId, token) => {
         }
     })
 }
+
+export const findParent = async (name, token, limit = 5) => {
+    return request(`/find?name=${encodeURIComponent(name)}&limit=${limit}`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+};
+
 
 export const joinClass = async (AddChildToClassDto, token) => {
     return request("/parent/join-class",{

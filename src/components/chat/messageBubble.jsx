@@ -1,4 +1,27 @@
-const MessageBubble = ({ text, time, isOwn }) => {
+import { useState, useEffect } from "react";
+
+const MessageBubble = ({ text, imageId, token, time, isOwn }) => {
+  const [imageUrl, setImageUrl] = useState(null);
+
+  useEffect(() => {
+    if (imageId && token) {
+      fetch(`http://localhost:4000/image/get/${imageId}`, {
+        headers: {
+          Authorization: token,
+        },
+      })
+        .then((response) => {
+             if (!response.ok) throw new Error("Failed to load image");
+             return response.blob();
+        })
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+          setImageUrl(url);
+        })
+        .catch((err) => console.error("Failed to load image", err));
+    }
+  }, [imageId, token]);
+
   return (
     <div
       style={{
@@ -15,7 +38,11 @@ const MessageBubble = ({ text, time, isOwn }) => {
           borderTopLeftRadius: !isOwn ? "0px" : "12px",
         }}
       >
-        <p style={styles.bubbleText}>{text}</p>
+        {imageUrl ? (
+             <img src={imageUrl} alt="Received content" style={styles.image} />
+        ) : (
+             text && <p style={styles.bubbleText}>{text}</p>
+        )}
         <span
           style={{
             ...styles.bubbleTime,
@@ -48,8 +75,11 @@ const styles = {
   bubbleText: {
     margin: 0,
     fontSize: "14px",
-    lineHeight: "1.4",
-    whiteSpace: "pre-wrap",
+  },
+  image: {
+      maxWidth: "200px",
+      borderRadius: "8px",
+      display: "block",
   },
   bubbleTime: {
     fontSize: "10px",
