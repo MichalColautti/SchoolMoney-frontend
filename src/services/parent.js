@@ -1,37 +1,4 @@
-export const REACT_APP_API_BASE_URL = "http://localhost:4000"
-
-const buildUrl = (path) => `${REACT_APP_API_BASE_URL.replace(/\/$/, "")}/parent${path}`;
-
-const request = async (path, options = {}) => {
-    const headers = {...options.headers};
-
-    if(!(options.body instanceof FormData)) {
-        headers['Content-Type'] = 'application/json';
-    }
-
-    const response = await fetch(buildUrl(path), {
-        ...options,
-        headers: headers,
-    });
-
-    if (!response.ok) {
-        let errorMessage;
-        try{
-            errorMessage = await response.text();
-        }
-        catch(error) {
-            errorMessage = `Request failed with status ${response.status}`;
-        }
-        throw new Error(errorMessage);
-    }
-
-    const responseText = await response.text();
-    if(!responseText){
-        return null;
-    }
-    return JSON.parse(responseText);
-
-};
+import {request} from "./utils/request";
 
 export const addChild = async (data, token) => {
     try{
@@ -73,7 +40,7 @@ export const addChildById = async (childId, token) => {
 }
 
 export const findParent = async (name, token, limit = 5) => {
-    return request(`/find?name=${encodeURIComponent(name)}&limit=${limit}`, {
+    return request(`/parent/find?name=${encodeURIComponent(name)}&limit=${limit}`, {
         method: "GET",
         headers: {
             Authorization: token
@@ -98,3 +65,78 @@ export const changeBlockStatus = async (parentId, isLocked, token) => {
         }
     });
 };
+
+
+export const joinClass = async (AddChildToClassDto, token) => {
+    return request("/parent/join-class",{
+        method: "POST",
+        body: JSON.stringify(AddChildToClassDto),
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
+export const deleteChildFromClass = async (classId, childId, token) => {
+    const url = "/parent/delete/class/" + classId + "/child/" + childId;
+
+    return request(url, {
+        method: "POST",
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
+export const changePassword = async (dto, token) => {
+    return request("/parent/change-password",{
+        method: "POST",
+        body: JSON.stringify(dto),
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
+export const editChild = async (data, token) => {
+    try{
+        const formData = new FormData();
+
+        const addChildDto = {
+            id: data.id,
+            name: data.name,
+            surname: data.surname,
+            birthday: data.birthday.toISOString().split('T')[0],
+        }
+
+        formData.append('editChildDto', new Blob([JSON.stringify(addChildDto)], {
+            type: 'application/json'
+        }));
+
+        if(data.photo){
+            formData.append('childPhoto', data.photo);
+        }
+
+        return request("/parent/edit-child",{
+            method: "POST",
+            body: formData,
+            headers: {
+                "Authorization": token
+            }
+        })
+    }
+    catch(err){
+        throw err;
+    }
+}
+
+export const deleteChild = async (childId, token) => {
+    const url = "/parent/delete-child/" + childId;
+
+    return request(url,{
+        method: "POST",
+        headers: {
+            "Authorization": token
+        }
+    })
+}

@@ -6,7 +6,7 @@ import TransactionTab from "../components/tabs/TransactionTab";
 import AccountingTab from "../components/tabs/AccountingTab";
 import FundraiserTab from "../components/tabs/FundraiserTab";
 import { useState } from "react";
-import {useAuth} from "../contexts/AuthContext";
+import {useUserData} from "../contexts/UserDataContext";
 
 const classesData = [
   {
@@ -288,7 +288,7 @@ Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, k
 const Parent = () => {
   const [activeTab, setActiveTab] = useState("children");
 
-  const {user} = useAuth();
+  const {user} = useUserData();
 
   return (
     <>

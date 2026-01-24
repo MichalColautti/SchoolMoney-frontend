@@ -6,15 +6,12 @@ import ForwardIcon from "../../assets/forward.svg";
 import { AuthContext } from "../../contexts/AuthContext";
 import { getChatMessages, uploadImage } from "../../services/chat";
 import { useFormatDate } from '../../hooks/useFormatDate'
-import { Client } from "@stomp/stompjs";
-import sockjs from "sockjs-client/dist/sockjs"
 
-const ChatDetail = ({ chat, onBack }) => {
+const ChatDetail = ({ chat, stompClient, onBack }) => {
   const { token, user } = useContext(AuthContext);
   const { formatToDateString } = useFormatDate();
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
-  const stompClientRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -45,39 +42,32 @@ const ChatDetail = ({ chat, onBack }) => {
   }, [token, chat.id, user, formatToDateString]);
 
   useEffect(() => {
-    const client = new Client({
-        webSocketFactory: () => new sockjs("http://localhost:4000/ws"),
-        connectHeaders: {
-            Authorization: token,
-        },
-        reconnectDelay: 5000,
-        onConnect: () => {
-             client.subscribe(`/user/queue/messages`, (message) => {
-                 if (message.body) {
-                     const apiMsg = JSON.parse(message.body);
-                     const uiMsg = mapMessage(apiMsg, user?.id);
-                     setMessages(prev => {
-                         if (prev.some(p => p.id === uiMsg.id)) return prev;
-                         return [...prev, uiMsg];
-                     });
-                     setTimeout(scrollToBottom, 100);
-                 }
-             });
-        },
-    });
+      if (!stompClient || !stompClient.connected) return;
 
-    client.activate();
-    stompClientRef.current = client;
+      const subscription = stompClient.subscribe(`/user/queue/messages`, (message) => {
+          if (message.body) {
+              const apiMsg = JSON.parse(message.body);
+              const uiMsg = mapMessage(apiMsg, user?.id);
+
+              if (apiMsg.chatId === chat.id) {
+                 setMessages(prev => {
+                     if (prev.some(p => p.id === uiMsg.id)) return prev;
+                     return [...prev, uiMsg];
+                 });
+                 setTimeout(scrollToBottom, 100);
+              }
+          }
+      });
 
     return () => {
-        client.deactivate();
+        subscription.unsubscribe();
     };
-  }, [chat.id, token, user, formatToDateString]);
+  }, [chat.id, stompClient, user]);
 
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
     e.target.value = ''; // Reset input immediately to allow re-selection
-    if (file && stompClientRef.current) {
+    if (file && stompClient) {
         try {
             const uploadedImage = await uploadImage(token, file);
 
@@ -89,7 +79,7 @@ const ChatDetail = ({ chat, onBack }) => {
                 createdAt: new Date().toISOString()
             };
 
-            stompClientRef.current.publish({
+            stompClient.publish({
                 destination: "/app/chat.send",
                 body: JSON.stringify(payload)
             });
@@ -100,7 +90,7 @@ const ChatDetail = ({ chat, onBack }) => {
   };
 
   const handleSend = () => {
-    if (!inputText.trim() || !stompClientRef.current) return;
+    if (!inputText.trim() || !stompClient) return;
 
     const payload = {
         chatId: chat.id,
@@ -110,7 +100,7 @@ const ChatDetail = ({ chat, onBack }) => {
         createdAt: new Date().toISOString()
     };
 
-    stompClientRef.current.publish({
+    stompClient.publish({
         destination: "/app/chat.send",
         body: JSON.stringify(payload)
     });
