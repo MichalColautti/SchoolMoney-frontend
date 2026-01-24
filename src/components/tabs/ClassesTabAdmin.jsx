@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import cancelIcon from "../../assets/cancel.svg";
+import { changeClassBlockStatus } from "../../services/schoolClass";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const ClassesTab = ({ classesData, setClassesData }) => {
+  const { token } = useContext(AuthContext);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
 
@@ -10,14 +13,23 @@ const ClassesTab = ({ classesData, setClassesData }) => {
     setIsConfirmModalOpen(true);
   };
 
-  const handleToggleClassStatus = () => {
-    setClassesData((prev) =>
-      prev.map((c) =>
-        c.id === selectedClass.id
-          ? { ...c, status: c.status === "Aktywna" ? "Zablokowana" : "Aktywna" }
-          : c,
-      ),
-    );
+  const handleToggleClassStatus = async () => {
+    const isLocked = selectedClass.status === "Aktywna";
+
+    try {
+        await changeClassBlockStatus(selectedClass.id, isLocked, token);
+
+        setClassesData((prev) =>
+          prev.map((c) =>
+            c.id === selectedClass.id
+              ? { ...c, status: isLocked ? "Zablokowana" : "Aktywna" }
+              : c,
+          ),
+        );
+    } catch (error) {
+        console.error("Failed to change class status:", error);
+    }
+
     setIsConfirmModalOpen(false);
     setSelectedClass(null);
   };
@@ -58,7 +70,7 @@ const ClassesTab = ({ classesData, setClassesData }) => {
                     <span style={styles.openCount}>{c.openCollections}</span>
                     <span style={styles.separator}>/</span>
                     <span style={styles.closedCount}>
-                      {c.closedCollections}
+                      {c.allCollections}
                     </span>
                   </td>
                   <td style={styles.td}>{c.studentsCount}</td>

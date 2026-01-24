@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import cancelIcon from "../../assets/cancel.svg";
+import { closeFundraising, returnFundraising } from "../../services/fundraising";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const FundraiserTab = ({ fundraisersData, setFundraisersData }) => {
+  const { token } = useContext(AuthContext);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [modalType, setModalType] = useState(""); // "close" lub "return"
   const [selectedFundraiser, setSelectedFundraiser] = useState(null);
@@ -12,17 +15,27 @@ const FundraiserTab = ({ fundraisersData, setFundraisersData }) => {
     setIsConfirmModalOpen(true);
   };
 
-  const handleAction = () => {
-    // Tutaj logika zmiany statusu w stanie
-    if (modalType === "close") {
-      setFundraisersData((prev) =>
-        prev.map((f) =>
-          f.id === selectedFundraiser.id ? { ...f, status: "Zakończona" } : f,
-        ),
-      );
-    } else {
-      console.log("Zwracanie środków dla:", selectedFundraiser.name);
+  const handleAction = async () => {
+    try {
+      if (modalType === "close") {
+        await closeFundraising(selectedFundraiser.id, token);
+        setFundraisersData((prev) =>
+          prev.map((f) =>
+            f.id === selectedFundraiser.id ? { ...f, status: "Zakończona" } : f,
+          ),
+        );
+      } else {
+        await returnFundraising(selectedFundraiser.id, token);
+        setFundraisersData((prev) =>
+          prev.map((f) =>
+            f.id === selectedFundraiser.id ? { ...f, status: "Zakończona", collected: 0 } : f,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("Failed to perform action on fundraiser:", error);
     }
+
     setIsConfirmModalOpen(false);
   };
 
@@ -66,20 +79,21 @@ const FundraiserTab = ({ fundraisersData, setFundraisersData }) => {
                   <div style={styles.actionGroup}>
                     <button
                       onClick={() => handleOpenModal(f, "close")}
-                      disabled={f.status === "Zakończona"}
+                      disabled={f.status === "Zakończona" || f.status === "Zwrócona"}
                       style={{
                         ...styles.btnAction,
                         backgroundColor:
-                          f.status === "Zakończona" ? "#ccc" : "#FF5C5C",
+                          (f.status === "Zakończona" || f.status === "Zwrócona") ? "#ccc" : "#FF5C5C",
                       }}
                     >
                       Zamknij
                     </button>
                     <button
                       onClick={() => handleOpenModal(f, "return")}
+                      disabled={f.collected <= 0}
                       style={{
                         ...styles.btnAction,
-                        backgroundColor: "#2B7FFF",
+                        backgroundColor: f.collected > 0 ? "#2B7FFF" : "#ccc",
                       }}
                     >
                       Zwróć

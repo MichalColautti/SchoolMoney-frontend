@@ -43,7 +43,25 @@ export const findParent = async (name, token, limit = 5) => {
     return request(`/parent/find?name=${encodeURIComponent(name)}&limit=${limit}`, {
         method: "GET",
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: token
+        }
+    });
+};
+
+export const getAllParents = async (token) => {
+    return request("/get-all", {
+        method: "GET",
+        headers: {
+            Authorization: token
+        }
+    });
+};
+
+export const changeBlockStatus = async (parentId, isLocked, token) => {
+    return request(`/${parentId}/status?isLocked=${isLocked}`, {
+        method: "PATCH",
+        headers: {
+            Authorization: token
         }
     });
 };

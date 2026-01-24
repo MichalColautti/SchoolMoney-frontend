@@ -8,10 +8,6 @@ import ExitIcon from "./../assets/exit.svg";
 
 const HeaderAdmin = () => {
   const { logout } = useAuth();
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
-  const toggleChat = () => setIsChatOpen(!isChatOpen);
-
   return (
     <>
       <div style={styles.container}>
@@ -27,11 +23,6 @@ const HeaderAdmin = () => {
         </nav>
 
         <div style={styles.right}>
-          <button style={styles.iconButton} onClick={toggleChat}>
-            <img src={ChatIcon} alt="chat" width="14" height="14" />
-            <span style={{ marginLeft: "8px" }}>Czat</span>
-          </button>
-
           <button style={styles.button} onClick={logout}>
             <img
               src={ExitIcon}
@@ -44,8 +35,6 @@ const HeaderAdmin = () => {
           </button>
         </div>
       </div>
-
-      {isChatOpen && <ChatSidebar onClose={() => setIsChatOpen(false)} />}
     </>
   );
 };
