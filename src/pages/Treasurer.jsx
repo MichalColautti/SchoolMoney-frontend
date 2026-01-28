@@ -2,10 +2,10 @@ import Header from "../components/Header";
 import Panel from "../components/Panel";
 import TransactionTab from "../components/tabs/TransactionTab";
 import AccountingTab from "../components/tabs/AccountingTab";
-import FundraiserTab from "../components/tabs/FundraiserTab";
+import FundraiserTab from "../components/tabs/FundraiserTabTreasurer";
 import MyClassesTab from "../components/tabs/MyClassesTab";
 import { useState } from "react";
-import {useUserData} from "../contexts/UserDataContext";
+import { useUserData } from "../contexts/UserDataContext";
 
 const classesData = [
   {
@@ -275,7 +275,7 @@ Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, k
 const Treasurer = () => {
   const [activeTab, setActiveTab] = useState("myclasses");
 
-  const {user} = useUserData();
+  const { user } = useUserData();
 
   return (
     <>
