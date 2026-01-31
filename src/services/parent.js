@@ -16,7 +16,7 @@ export const addChild = async (data, token) => {
 
         formData.append('childPhoto', data.photo);
 
-        return request("/add-child",{
+        return request("/parent/add-child",{
             method: "POST",
             body: formData,
             headers: {
