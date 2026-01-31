@@ -1,4 +1,4 @@
-import AccountingItem from "./AccountingItem";
+import AccountingItem from "../items/AccountingItem";
 
 const AccountingTab = ({ accountingData }) => {
   return (

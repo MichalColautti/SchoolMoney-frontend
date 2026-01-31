@@ -1,8 +1,8 @@
-const API_BASE_URL = "http://localhost:4000";
+const REACT_APP_API_BASE_URL = "http://localhost:4000"
 
-const buildUrl = (path) => `${API_BASE_URL.replace(/\/$/, "")}${path}`;
+const buildUrl = (path) => `${REACT_APP_API_BASE_URL.replace(/\/$/, "")}${path}`;
 
-const request = async (path, options = {}) => {
+export const request = async (path, options = {}) => {
     const response = await fetch(buildUrl(path), {
         headers: {
             "Content-Type": "application/json",
@@ -26,7 +26,7 @@ const request = async (path, options = {}) => {
     return responseBody;
 };
 
-const authorizedRequest = async (path, token, options = {}) =>
+export const authorizedRequest = async (path, token, options = {}) =>
     request(path, {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -35,8 +35,8 @@ const authorizedRequest = async (path, token, options = {}) =>
     });
 
 
-export const loginRequest = async (credentials) =>
-    request("/auth/login", {
+export const loginRequest = async (credentials, endpoint = "/auth/login") =>
+    request(endpoint, {
         method: "POST",
         body: JSON.stringify(credentials),
     });

@@ -1,15 +1,117 @@
+import { useState, useEffect, useContext, useRef } from "react";
 import MessageBubble from "./messageBubble";
 import BackIcon from "../../assets/back.svg";
 import AddIcon from "../../assets/add.svg";
 import ForwardIcon from "../../assets/forward.svg";
+import { AuthContext } from "../../contexts/AuthContext";
+import { getChatMessages, uploadImage } from "../../services/chat";
+import { useFormatDate } from '../../hooks/useFormatDate'
 
-const ChatDetail = ({ chat, onBack }) => {
-  const messages = [
-    { id: 1, text: "Hej gdzie jesteś?", time: "11:40", isOwn: false },
-    { id: 2, text: "Hej jestem na miejscu.", time: "11:43", isOwn: true },
-    { id: 3, text: "Ok też jestem.", time: "11:45", isOwn: false },
-    { id: 4, text: "Gdzie? Nie mogę cię znaleźć", time: "11:46", isOwn: true },
-  ];
+const ChatDetail = ({ chat, stompClient, onBack }) => {
+  const { token, user } = useContext(AuthContext);
+  const { formatToDateString } = useFormatDate();
+  const [messages, setMessages] = useState([]);
+  const [inputText, setInputText] = useState("");
+  const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const mapMessage = (m, myId) => ({
+    id: m.id,
+    text: m.textContent,
+    imageId: m.imageId,
+    time: m.createdAt ? formatToDateString(new Date(m.createdAt)) : "",
+    originalDate: m.createdAt,
+    isOwn: m.authorId === myId
+  });
+
+  useEffect(() => {
+    if (token && chat.id) {
+        getChatMessages(token, chat.id)
+            .then(data => {
+                const mapped = data.map(m => mapMessage(m, user?.id));
+                const sorted = mapped.sort((a, b) => new Date(a.originalDate) - new Date(b.originalDate));
+                setMessages(sorted);
+                setTimeout(scrollToBottom, 100);
+            })
+            .catch(console.error);
+    }
+  }, [token, chat.id, user, formatToDateString]);
+
+  useEffect(() => {
+      if (!stompClient || !stompClient.connected) return;
+
+      const subscription = stompClient.subscribe(`/user/queue/messages`, (message) => {
+          if (message.body) {
+              const apiMsg = JSON.parse(message.body);
+              const uiMsg = mapMessage(apiMsg, user?.id);
+
+              if (apiMsg.chatId === chat.id) {
+                 setMessages(prev => {
+                     if (prev.some(p => p.id === uiMsg.id)) return prev;
+                     return [...prev, uiMsg];
+                 });
+                 setTimeout(scrollToBottom, 100);
+              }
+          }
+      });
+
+    return () => {
+        subscription.unsubscribe();
+    };
+  }, [chat.id, stompClient, user]);
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = ''; // Reset input immediately to allow re-selection
+    if (file && stompClient) {
+        try {
+            const uploadedImage = await uploadImage(token, file);
+
+            const payload = {
+                chatId: chat.id,
+                contentType: "IMAGE",
+                textContent: null,
+                imageId: uploadedImage.id,
+                createdAt: new Date().toISOString()
+            };
+
+            stompClient.publish({
+                destination: "/app/chat.send",
+                body: JSON.stringify(payload)
+            });
+        } catch (error) {
+            console.error("Error uploading image", error);
+        }
+    }
+  };
+
+  const handleSend = () => {
+    if (!inputText.trim() || !stompClient) return;
+
+    const payload = {
+        chatId: chat.id,
+        contentType: "TEXT",
+        textContent: inputText,
+        imageId: null,
+        createdAt: new Date().toISOString()
+    };
+
+    stompClient.publish({
+        destination: "/app/chat.send",
+        body: JSON.stringify(payload)
+    });
+    setInputText("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSend();
+    }
+  };
 
   return (
     <div style={styles.chatDetailContainer}>
@@ -29,21 +131,37 @@ const ChatDetail = ({ chat, onBack }) => {
           <MessageBubble
             key={msg.id}
             text={msg.text}
+            imageId={msg.imageId}
+            token={token}
             time={msg.time}
             isOwn={msg.isOwn}
           />
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input bar */}
       <div style={styles.inputBar}>
-        <button style={styles.iconButton}>
+        <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+            accept="image/*"
+        />
+        <button style={styles.iconButton} onClick={() => fileInputRef.current?.click()}>
           <img src={AddIcon} alt="add" width="24" height="24" />
         </button>
         <div style={styles.inputWrapper}>
-          <input type="text" style={styles.messageInput} />
+          <input
+            type="text"
+            style={styles.messageInput}
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
         </div>
-        <button style={styles.iconButton}>
+        <button style={styles.iconButton} onClick={handleSend}>
           <img src={ForwardIcon} alt="send" width="24" height="24" />
         </button>
       </div>

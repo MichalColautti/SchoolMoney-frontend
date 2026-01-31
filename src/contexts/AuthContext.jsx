@@ -1,16 +1,18 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {loginRequest, logoutRequest, registerRequest} from "../services/auth";
 import {validateRegisterPassword} from "../scripts/validate/validateRegisterPassword";
+import {useUserData} from "./UserDataContext";
 
-const AuthContext = createContext(undefined, undefined);
+export const AuthContext = createContext(undefined, undefined);
 
-const LOCAL_STORAGE_TOKEN_KEY = "";
+const LOCAL_STORAGE_TOKEN_KEY = "token";
 
 export const AuthProvider = ({children}) => {
     const [token, setToken] = useState(() => localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY));
-    const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    const {onSetUser, onClearUser} = useUserData();
 
     useEffect(() => {
         if (token) {
@@ -22,19 +24,19 @@ export const AuthProvider = ({children}) => {
 
     const handleAuthSuccess = useCallback(
         (payload) => {
-            setToken(payload.loginToken.substring(7) || "");
+            setToken("Bearer " + payload.loginToken.substring(7) || "");
             payload.loginToken = "";
-            setUser(payload || null);
+            onSetUser(payload || null);
         },
-        [setToken, setUser]
+        [setToken, onSetUser]
     );
 
     const login = useCallback(
-        async (credentials) => {
+        async (credentials, endpoint) => {
             setLoading(true);
             setError(null);
             try {
-                const payload = await loginRequest(credentials);
+                const payload = await loginRequest(credentials, endpoint);
                 handleAuthSuccess(payload);
             } catch (err) {
                 setError(err.message);
@@ -50,7 +52,7 @@ export const AuthProvider = ({children}) => {
         async (payload) => {
             setLoading(true);
             setError(null);
-            if(validateRegisterPassword(payload.password, payload.repeatPassword)){
+            if (validateRegisterPassword(payload.password, payload.repeatPassword)) {
                 setError('Passwords do not match');
                 setLoading(false);
                 return;
@@ -77,7 +79,7 @@ export const AuthProvider = ({children}) => {
                 throw err;
             } finally {
                 setToken(null);
-                setUser(null);
+                onClearUser();
                 setLoading(false);
             }
         }, [token]);
@@ -86,14 +88,13 @@ export const AuthProvider = ({children}) => {
         () => ({
             isAuthenticated: Boolean(token),
             token,
-            user,
             error,
             loading,
             login,
             register,
-            logout,
+            logout
         }),
-        [token, user, error, loading, login, register, logout]
+        [token, error, loading, login, register, logout]
     );
 
     return (

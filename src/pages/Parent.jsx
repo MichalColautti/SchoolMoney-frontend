@@ -1,11 +1,12 @@
 import Header from "../components/Header";
 import Panel from "../components/Panel";
-import ChildrenTab from "../components/ChildrenTab";
-import ClassesTab from "../components/ClassesTab";
-import TransactionTab from "../components/TransactionTab";
-import AccountingTab from "../components/AccountingTab";
-import FundraiserTab from "../components/FundraiserTab";
+import ChildrenTab from "../components/tabs/ChildrenTab";
+import ClassesTab from "../components/tabs/ClassesTab";
+import TransactionTab from "../components/tabs/TransactionTab";
+import AccountingTab from "../components/tabs/AccountingTab";
+import FundraiserTab from "../components/tabs/FundraiserTab";
 import { useState } from "react";
+import {useUserData} from "../contexts/UserDataContext";
 
 const classesData = [
   {
@@ -19,6 +20,12 @@ const classesData = [
         name: "Wyjazd w góry",
         userPaymentStatus: "paid",
         fundraiserStatus: "unactive",
+      },
+    ],
+    mychildren: [
+      {
+        id: "s1",
+        name: "Zofia Kowalska",
       },
     ],
     students: [
@@ -45,25 +52,16 @@ const classesData = [
         fundraiserStatus: "active",
       },
     ],
+    mychildren: [
+      {
+        id: "s2",
+        name: "Jan Kowalski",
+      },
+    ],
     students: [
       { id: "s9", name: "Zofia Nowak" },
       { id: "s10", name: "Maciej Kowalski" },
     ],
-  },
-];
-
-const kidsData = [
-  {
-    name: "Jan Kowalski",
-    class: "3c",
-    dateOfBirth: "19.20.2009",
-    uid: "489gsgi3",
-  },
-  {
-    name: "Zofia Kowalska",
-    class: "1c",
-    dateOfBirth: "19.20.2009",
-    uid: "489g443",
   },
 ];
 
@@ -290,15 +288,26 @@ Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, k
 const Parent = () => {
   const [activeTab, setActiveTab] = useState("children");
 
+  const {user} = useUserData();
+
   return (
     <>
       <Header balance={432.32} />
       <div style={styles.container}>
         {/* Stats */}
         <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-          <Panel title="Moje dzieci" value="2" />
-          <Panel title="Aktywne zbiórki" value="1" />
-          <Panel title="Transakcje" value="5" />
+          <Panel
+              title="Moje dzieci"
+              value={user && user.children && user.children.length}
+          />
+          <Panel
+              title="Aktywne zbiórki"
+              value="1"
+          />
+          <Panel
+              title="Transakcje"
+              value="5"
+          />
         </div>
 
         {/* Nav */}
@@ -346,7 +355,7 @@ const Parent = () => {
         </nav>
 
         {/* Tabs content*/}
-        {activeTab === "children" && <ChildrenTab kids={kidsData} />}
+        {activeTab === "children" && <ChildrenTab kids={[]}/>}
         {activeTab === "classes" && <ClassesTab classesData={classesData} />}
         {activeTab === "fundraisers" && (
           <FundraiserTab fundraisersData={fundraisersData} />

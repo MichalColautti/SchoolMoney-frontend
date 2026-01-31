@@ -4,62 +4,25 @@ import { useAuth } from "../contexts/AuthContext";
 import ChatSidebar from "./chat/chatSidebar";
 
 import ChatIcon from "./../assets/chat.svg";
-import CoinIcon from "./../assets/coin.svg";
 import ExitIcon from "./../assets/exit.svg";
 
-const Header = () => {
+const HeaderAdmin = () => {
   const { logout } = useAuth();
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
-  const toggleChat = () => setIsChatOpen(!isChatOpen);
-
   return (
     <>
       <div style={styles.container}>
         <nav style={styles.navigation}>
           <NavLink
-            to="/parent"
+            to="/admin"
             style={({ isActive }) =>
               isActive ? styles.activeLink : styles.link
             }
           >
-            Panel Rodzica
-          </NavLink>
-          <NavLink
-            to="/treasurer"
-            style={({ isActive }) =>
-              isActive ? styles.activeLink : styles.link
-            }
-          >
-            Panel Skarbnika
-          </NavLink>
-          <NavLink
-            to="/account"
-            style={({ isActive }) =>
-              isActive ? styles.activeLink : styles.link
-            }
-          >
-            Konto
+            Panel Admina
           </NavLink>
         </nav>
 
         <div style={styles.right}>
-          <button style={styles.iconButton} onClick={toggleChat}>
-            <img src={ChatIcon} alt="chat" width="14" height="14" />
-            <span style={{ marginLeft: "8px" }}>Czat</span>
-          </button>
-
-          <button style={styles.button}>
-            <img
-              src={CoinIcon}
-              alt="coin"
-              width="16"
-              height="16"
-              style={{ marginRight: "8px" }}
-            />
-            432,32 zł
-          </button>
-
           <button style={styles.button} onClick={logout}>
             <img
               src={ExitIcon}
@@ -72,8 +35,6 @@ const Header = () => {
           </button>
         </div>
       </div>
-
-      {isChatOpen && <ChatSidebar onClose={() => setIsChatOpen(false)} />}
     </>
   );
 };
@@ -142,4 +103,4 @@ const styles = {
   },
 };
 
-export default Header;
+export default HeaderAdmin;
