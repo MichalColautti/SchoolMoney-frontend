@@ -10,7 +10,7 @@ const getBadgeStyle = (type) => {
   return styles.badgeBlue;
 };
 
-const FundraiserItem = ({ fundraiser }) => {
+const FundraiserItem = ({ fundraiser, isTreasurer }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
   const [activeTab, setActiveTab] = useState("my");
@@ -94,6 +94,24 @@ const FundraiserItem = ({ fundraiser }) => {
           </div>
 
           <div style={styles.childrenSection}>
+            {isTreasurer ? (
+              <>
+                <h3 style={styles.childrenHeader}>Wszyscy uczniowie</h3>
+                {children.map((child) => (
+                  <div key={child.id} style={styles.childItem}>
+                    <div style={styles.childInfo}>
+                      <div style={styles.avatar} />
+                      <span>{child.name}</span>
+                      <span style={styles.childAmount}>
+                        {child.amountPaid} / {costPerChild} zł
+                      </span>
+                    </div>
+                    {child.amountPaid > 0 && <button style={styles.buttonRed}>Zwróć pieniądze</button>}
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
             <div style={styles.tabsContainer}>
               <button
                 style={activeTab === "my" ? styles.tabActive : styles.tab}
@@ -121,15 +139,11 @@ const FundraiserItem = ({ fundraiser }) => {
                     </span>
                   </div>
                   {isPaid ? (
-                    isActive ? (
-                      <button style={styles.buttonRed}>Zwróć pieniądze</button>
-                    ) : (
-                      <span style={{ color: "#1A844D", fontWeight: "bold", fontSize: "14px", padding: "10px 24px" }}>Opłacono</span>
-                    )
+                    <button style={styles.buttonRed}>Zwróć pieniądze</button>
                   ) : (
-                    isActive && (
-                      <button style={styles.buttonBlueSmall} onClick={() => handleOpenPaymentModal(child)}>Wpłać</button>
-                    )
+                    <button style={styles.buttonBlueSmall} onClick={() => handleOpenPaymentModal(child)}>
+                      Wpłać
+                    </button>
                   )}
                 </div>
               );
@@ -149,14 +163,22 @@ const FundraiserItem = ({ fundraiser }) => {
                   {isPaid ? (
                     <span style={{ color: "#1A844D", fontWeight: "bold", fontSize: "14px", padding: "10px 24px" }}>Opłacono</span>
                   ) : (
-                    isActive && (
-                      <button style={styles.buttonBlueSmall} onClick={() => handleOpenPaymentModal(child)}>Wpłać</button>
-                    )
+                    <button style={styles.buttonBlueSmall} onClick={() => handleOpenPaymentModal(child)}>
+                      Wpłać
+                    </button>
                   )}
                 </div>
               );
             })}
+              </>
+            )}
           </div>
+
+          {isActive && (
+            <div style={styles.footer}>
+              <button style={styles.buttonBlueLarge}>Wpłać na zbiórkę</button>
+            </div>
+          )}
         </div>
       )}
 
@@ -461,7 +483,7 @@ const styles = {
   },
   numberInput: {
     width: "70px",
-    padding: "8px",
+    padding: "8px 24px 8px 8px",
     borderRadius: "8px",
     border: "1px solid #E2E8F0",
     textAlign: "right",
