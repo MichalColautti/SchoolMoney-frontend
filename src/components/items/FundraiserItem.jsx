@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import cancelIcon from "../../assets/cancel.svg";
+import TrashcanIcon from "../../assets/trashcan.svg";
+import UploadFileIcon from "../../assets/upload.svg";
 
 const getBadgeStyle = (type) => {
   if (type === "green") {
@@ -17,6 +20,10 @@ const FundraiserItem = ({ fundraiser, isTreasurer }) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedChild, setSelectedChild] = useState(null);
   const [paymentAmount, setPaymentAmount] = useState(0);
+  const [isAddDocModalOpen, setIsAddDocModalOpen] = useState(false);
+  const [docName, setDocName] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   const {
     title,
@@ -29,6 +36,7 @@ const FundraiserItem = ({ fundraiser, isTreasurer }) => {
     organizer,
     children = [],
     otherChildren = [],
+    documents = [],
   } = fundraiser;
 
   const isActive = badges.some(
@@ -91,6 +99,26 @@ const FundraiserItem = ({ fundraiser, isTreasurer }) => {
             <span>
               Skarbnik: <strong>{organizer}</strong>
             </span>
+          </div>
+
+          <div style={styles.section}>
+            <div style={styles.sectionHeaderRow}>
+              <h3 style={styles.sectionHeader}>Dokumenty</h3>
+              {isTreasurer && (
+                <button style={styles.buttonBlueSmall} onClick={() => setIsAddDocModalOpen(true)}>
+                  Dodaj dokument
+                </button>
+              )}
+            </div>
+            {documents.length > 0 ? (
+              documents.map((doc, idx) => (
+                <div key={idx} style={styles.documentRow}>
+                  <span>📄 {doc.name}</span>
+                </div>
+              ))
+            ) : (
+              <div style={styles.emptyText}>Brak dokumentów</div>
+            )}
           </div>
 
           <div style={styles.childrenSection}>
@@ -173,12 +201,6 @@ const FundraiserItem = ({ fundraiser, isTreasurer }) => {
               </>
             )}
           </div>
-
-          {isActive && (
-            <div style={styles.footer}>
-              <button style={styles.buttonBlueLarge}>Wpłać na zbiórkę</button>
-            </div>
-          )}
         </div>
       )}
 
@@ -233,6 +255,93 @@ const FundraiserItem = ({ fundraiser, isTreasurer }) => {
                 Anuluj
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {isAddDocModalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContentLarge}>
+            <div style={styles.modalHeader}>
+              <h2 style={styles.modalTitle}>Dodaj dokument</h2>
+              <button
+                style={styles.closeButton}
+                onClick={() => setIsAddDocModalOpen(false)}
+              >
+                <img src={cancelIcon} alt="Zamknij" width="24" height="24" />
+              </button>
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Nazwa dokumentu</label>
+              <input
+                type="text"
+                style={styles.textInput}
+                value={docName}
+                onChange={(e) => setDocName(e.target.value)}
+                placeholder="Wpisz nazwę..."
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Plik</label>
+              <div
+                style={
+                  selectedFile
+                    ? styles.uploadSectionFilled
+                    : styles.uploadContainer
+                }
+                onClick={() =>
+                  fileInputRef.current && fileInputRef.current.click()
+                }
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={(e) => setSelectedFile(e.target.files[0])}
+                />
+
+                {selectedFile ? (
+                  <div style={styles.fileRow}>
+                    <span style={styles.fileName}>{selectedFile.name}</span>
+                    <button
+                      style={styles.trashBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFile(null);
+                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      }}
+                    >
+                      <img src={TrashcanIcon} alt="delete" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ marginBottom: "12px" }}>
+                      <img
+                        src={UploadFileIcon}
+                        alt="UploadFile"
+                        width={64}
+                        height={64}
+                      />
+                    </div>
+                    <span style={styles.uploadLabelBold}>Wybierz plik</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <button
+              style={{ ...styles.buttonBlueLarge, marginTop: "24px" }}
+              onClick={() => {
+                setIsAddDocModalOpen(false);
+                setDocName("");
+                setSelectedFile(null);
+              }}
+            >
+              Dodaj dokument
+            </button>
           </div>
         </div>
       )}
@@ -343,6 +452,32 @@ const styles = {
     borderRadius: "8px",
     marginBottom: "16px",
     fontSize: "14px",
+  },
+  section: {
+    marginTop: "24px",
+  },
+  sectionHeaderRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "12px",
+  },
+  sectionHeader: {
+    fontSize: "16px",
+    color: "#1E293B",
+    margin: 0,
+    fontWeight: "bold",
+  },
+  documentRow: {
+    padding: "8px 0",
+    borderBottom: "1px solid #F3F4F6",
+    fontSize: "14px",
+    color: "#334155",
+  },
+  emptyText: {
+    fontSize: "14px",
+    color: "#94A3B8",
+    fontStyle: "italic",
   },
   childrenSection: {
     marginTop: "24px",
@@ -470,11 +605,28 @@ const styles = {
     maxWidth: "400px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
   },
+  modalContentLarge: {
+    backgroundColor: "#fff",
+    padding: "32px",
+    borderRadius: "20px",
+    width: "90%",
+    maxWidth: "600px",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "8px",
+  },
   modalTitle: {
-    margin: "0 0 16px 0",
-    fontSize: "18px",
+    margin: 0,
+    fontSize: "20px",
     fontWeight: "bold",
-    color: "#1E293B",
+    color: "#000",
   },
   rangeInput: {
     width: "100%",
@@ -506,6 +658,87 @@ const styles = {
     fontSize: "16px",
     cursor: "pointer",
     width: "100%",
+  },
+  closeButton: {
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    padding: "4px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  formGroup: {
+    marginBottom: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  label: {
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#000",
+  },
+  textInput: {
+    padding: "12px",
+    borderRadius: "8px",
+    border: "none",
+    backgroundColor: "#F0F9FF",
+    fontSize: "16px",
+    height: "40px",
+    outline: "none",
+  },
+  uploadContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "#F0F9FF",
+    border: "2px dashed #2B7FFF",
+    borderRadius: "10px",
+    padding: "32px",
+    cursor: "pointer",
+    minHeight: "140px",
+    boxSizing: "border-box",
+  },
+  uploadSectionFilled: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    background: "#F2F7FD",
+    border: "1px solid transparent",
+    borderRadius: "10px",
+    padding: "14px 16px",
+    cursor: "pointer",
+    boxSizing: "border-box",
+  },
+  uploadLabelBold: {
+    fontWeight: "600",
+    fontSize: "15px",
+    color: "#000",
+  },
+  fileRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+  },
+  fileName: {
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#101828",
+    flex: 1,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  trashBtn: {
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    padding: 0,
+    marginLeft: "auto",
   },
 };
 
