@@ -330,7 +330,7 @@ const Treasurer = () => {
           <MyClassesTab classesData={classesData} />
         )}
         {activeTab === "fundraisers" && (
-          <FundraiserTab fundraisersData={fundraisersData} />
+          <FundraiserTab fundraisersData={fundraisersData} isTreasurer={true} />
         )}
         {activeTab === "transactions" && (
           <TransactionTab transactionsData={transactionsData} />

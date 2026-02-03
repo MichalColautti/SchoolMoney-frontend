@@ -282,6 +282,26 @@ Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, k
         avatar: null,
       },
     ],
+    otherChildren: [
+      {
+        id: "o1",
+        name: "Kasia Iksińska",
+        amountPaid: 80,
+        avatar: null,
+      },
+      {
+        id: "o2",
+        name: "Marek Nowak",
+        amountPaid: 250,
+        avatar: null,
+      },
+      {
+        id: "o3",
+        name: "Piotr Zieliński",
+        amountPaid: 0,
+        avatar: null,
+      },
+    ],
   },
 ];
 
