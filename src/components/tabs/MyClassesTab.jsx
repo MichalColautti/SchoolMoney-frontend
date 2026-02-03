@@ -75,7 +75,7 @@ const MyClassesTab = () => {
                 <div style={styles.modalOverlay}>
                     <div style={styles.modalContentLarge}>
                         <div style={styles.modalHeader}>
-                            <h2 style={styles.modalTitle}>Stwó,rz nową klasę</h2>
+                            <h2 style={styles.modalTitle}>Stwórz nową klasę</h2>
                             <button
                                 style={styles.closeButton}
                                 onClick={toggleAddClassModal}

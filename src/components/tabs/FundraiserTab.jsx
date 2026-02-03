@@ -1,10 +1,10 @@
 import FundraiserItem from "../items/FundraiserItem";
 
-const FundraiserTab = ({ fundraisersData }) => {
+const FundraiserTab = ({ fundraisersData, isTreasurer }) => {
   return (
     <div style={styles.listContainer}>
       {fundraisersData.map((fundraiser) => (
-        <FundraiserItem key={fundraiser.id} fundraiser={fundraiser} />
+        <FundraiserItem key={fundraiser.id} fundraiser={fundraiser} isTreasurer={isTreasurer} />
       ))}
     </div>
   );
