@@ -114,12 +114,6 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
               );
             })}
           </div>
-
-          {isActive && (
-            <div style={styles.footer}>
-              <button style={styles.buttonBlueLarge}>Wpłać na zbiórkę</button>
-            </div>
-          )}
         </div>
       )}
     </div>
