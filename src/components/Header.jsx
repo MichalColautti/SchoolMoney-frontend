@@ -6,12 +6,19 @@ import ChatSidebar from "./chat/chatSidebar";
 import ChatIcon from "./../assets/chat.svg";
 import CoinIcon from "./../assets/coin.svg";
 import ExitIcon from "./../assets/exit.svg";
+import cancelIcon from "../assets/cancel.svg";
 
 const Header = () => {
   const { logout } = useAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isAddFundsModalOpen, setIsAddFundsModalOpen] = useState(false);
+  const [amount, setAmount] = useState("");
 
   const toggleChat = () => setIsChatOpen(!isChatOpen);
+  const handleAddFunds = () => {
+    setIsAddFundsModalOpen(false);
+    setAmount("");
+  };
 
   return (
     <>
@@ -49,7 +56,7 @@ const Header = () => {
             <span style={{ marginLeft: "8px" }}>Czat</span>
           </button>
 
-          <button style={styles.button}>
+          <button style={styles.button} onClick={() => setIsAddFundsModalOpen(true)}>
             <img
               src={CoinIcon}
               alt="coin"
@@ -74,6 +81,46 @@ const Header = () => {
       </div>
 
       {isChatOpen && <ChatSidebar onClose={() => setIsChatOpen(false)} />}
+
+      {isAddFundsModalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <div style={styles.modalHeader}>
+              <h3 style={styles.modalTitle}>Doładuj konto</h3>
+              <button
+                style={styles.closeButton}
+                onClick={() => setIsAddFundsModalOpen(false)}
+              >
+                <img src={cancelIcon} alt="Zamknij" width="24" height="24" />
+              </button>
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Kwota (zł)</label>
+              <input
+                type="number"
+                min="1"
+                style={styles.input}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Wpisz kwotę..."
+              />
+            </div>
+
+            <div style={styles.modalActions}>
+              <button style={styles.buttonBlue} onClick={handleAddFunds}>
+                Zatwierdź
+              </button>
+              <button
+                style={styles.buttonCancel}
+                onClick={() => setIsAddFundsModalOpen(false)}
+              >
+                Anuluj
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -139,6 +186,95 @@ const styles = {
     display: "flex",
     alignItems: "center",
     color: "#333",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "'Krub', sans-serif",
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: "24px",
+    borderRadius: "16px",
+    width: "90%",
+    maxWidth: "400px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "24px",
+  },
+  modalTitle: {
+    margin: 0,
+    fontSize: "20px",
+    fontWeight: "bold",
+    color: "#000",
+  },
+  closeButton: {
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    padding: "4px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  formGroup: {
+    marginBottom: "24px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  label: {
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#000",
+  },
+  input: {
+    padding: "12px",
+    borderRadius: "8px",
+    border: "none",
+    backgroundColor: "#F0F9FF",
+    fontSize: "16px",
+    outline: "none",
+    width: "100%",
+    boxSizing: "border-box",
+  },
+  modalActions: {
+    display: "flex",
+    gap: "12px",
+  },
+  buttonBlue: {
+    background: "#2B7FFF",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "12px 24px",
+    fontWeight: "bold",
+    fontSize: "16px",
+    cursor: "pointer",
+    width: "100%",
+  },
+  buttonCancel: {
+    background: "#F1F5F9",
+    color: "#64748B",
+    border: "none",
+    borderRadius: "8px",
+    padding: "12px 24px",
+    fontWeight: "bold",
+    fontSize: "16px",
+    cursor: "pointer",
+    width: "100%",
   },
 };
 
