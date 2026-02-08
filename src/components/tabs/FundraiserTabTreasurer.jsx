@@ -3,8 +3,10 @@ import FundraiserItem from "./../items/FundraiserItemTreasurer.jsx";
 import CancelIcon from "../../assets/cancel.svg";
 import TrashcanIcon from "../../assets/trashcan.svg";
 import UploadFileIcon from "../../assets/upload.svg";
+import { useUserData } from "../../contexts/UserDataContext";
 
 const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
+  const { user } = useUserData();
   const [list, setList] = useState(initialData || []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -13,6 +15,7 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
   const emptyForm = {
     id: null,
     title: "",
+    classId: "",
     goal: "",
     description: "",
     endDate: "",
@@ -28,6 +31,8 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
   };
 
   const [formData, setFormData] = useState(emptyForm);
+
+  const treasurerClasses = user?.classes?.filter((c) => c.isTreasurer) || [];
 
   const handleOpenEdit = (item) => {
     setIsEditing(true);
@@ -108,15 +113,26 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
                 }
               />
 
-              <label style={tabStyles.label}>Cel krótki</label>
-              <input
+              <label style={tabStyles.label}>Klasa</label>
+              <select
                 style={tabStyles.input}
-                placeholder="np. Cel: zbieramy na klasowy wyjazd..."
-                value={formData.goal}
-                onChange={(e) =>
-                  setFormData({ ...formData, goal: e.target.value })
-                }
-              />
+                value={formData.classId || ""}
+                onChange={(e) => {
+                  const selectedClass = treasurerClasses.find(
+                    (c) => c.id === e.target.value,
+                  );
+                  setFormData({
+                    ...formData,
+                    classId: e.target.value,
+                    goal: selectedClass ? `${selectedClass.name} ${selectedClass.year}` : "",
+                  });
+                }}
+              >
+                <option value="" disabled>Wybierz klasę</option>
+                {treasurerClasses.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name} {c.year}</option>
+                ))}
+              </select>
 
               <label style={tabStyles.label}>Zdjęcie</label>
               <div
