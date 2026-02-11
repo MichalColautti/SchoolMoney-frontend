@@ -4,11 +4,13 @@ import BackIcon from "../../assets/back.svg";
 import AddIcon from "../../assets/add.svg";
 import ForwardIcon from "../../assets/forward.svg";
 import { AuthContext } from "../../contexts/AuthContext";
+import { useUserData } from "../../contexts/UserDataContext";
 import { getChatMessages, uploadImage } from "../../services/chat";
 import { useFormatDate } from '../../hooks/useFormatDate'
 
 const ChatDetail = ({ chat, stompClient, onBack }) => {
-  const { token, user } = useContext(AuthContext);
+  const { token} = useContext(AuthContext);
+  const { user } = useUserData();
   const { formatToDateString } = useFormatDate();
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");

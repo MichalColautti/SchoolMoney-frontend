@@ -54,12 +54,12 @@ export const findParent = async (name, token, limit = 5) => {
 };
 
 export const getAllParents = async (token) => {
-  return request("/get-all", {
-    method: "GET",
-    headers: {
-      Authorization: token,
-    },
-  });
+    return request("/parent/get-all", {
+        method: "GET",
+        headers: {
+            Authorization: token
+        }
+    });
 };
 
 export const changeBlockStatus = async (parentId, isLocked, token) => {
@@ -70,6 +70,7 @@ export const changeBlockStatus = async (parentId, isLocked, token) => {
     },
   });
 };
+
 
 export const joinClass = async (AddChildToClassDto, token) => {
   return request("/parent/join-class", {
@@ -144,5 +145,25 @@ export const deleteChild = async (childId, token) => {
     headers: {
       Authorization: token,
     },
+  });
+};
+
+export const addToWallet = async (amount, token) => {
+  return request("/parent/add-money", {
+    method: "POST",
+    body: JSON.stringify(amount),
+    headers: {
+      Authorization: token,
+    },
+  });
+}
+
+export const payForFundraising = async (fundraisingId, childId, amount, token) => {
+  return request(`/parent/pay/${fundraisingId}/${childId}`, {
+    method: "POST",
+    headers: {
+      Authorization: token,
+    },
+    body: JSON.stringify(amount),
   });
 };

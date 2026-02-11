@@ -37,3 +37,39 @@ export const deleteChildFromClass = async (classId, childId, token) => {
         }
     })
 }
+
+export const getAllClasses = async (token) => {
+    return request("/treasurer/get-classes", {
+        method: "GET",
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
+export const getTreasurerFundraisings = async (token) => {
+    return request("/treasurer/get-fundraisings", {
+        method: "GET",
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
+export const returnPayment = async (fundraisingId, childId, token) => {
+    return request(`/treasurer/return-payments/${fundraisingId}/${childId}`, {
+        method: "POST",
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
+export const getTransactions = async (token) => {
+    return request("/treasurer/get-transactions", {
+        method: "GET",
+        headers: {
+            "Authorization": token
+        }
+    })
+}

@@ -4,6 +4,7 @@ import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
 import {useAuth} from "../../contexts/AuthContext";
 import {deleteChildFromClass} from "../../services/parent";
 import {useUserData} from "../../contexts/UserDataContext";
+import { getImageUrl } from '../../services/image'
 
 const ClassItem = ({classInfo}) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -46,7 +47,7 @@ const ClassItem = ({classInfo}) => {
             {/* Header */}
             <div style={styles.classHeader} onClick={toggleExpand}>
                 <div style={styles.classInfo}>
-                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${imageId}`} alt={"class-img"}
+                    <img src={`${getImageUrl(imageId)}`} alt={"class-img"}
                          style={styles.classIcon}/>
                     <div style={styles.className}>{name}</div>
                     <div style={styles.classYear}>{year}</div>
@@ -102,7 +103,7 @@ const ClassItem = ({classInfo}) => {
                             student.isMyChild === true &&
                             <div key={student.id} style={styles.studentItem}>
                                 <div style={styles.studentInfo}>
-                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${student.imageId}?t=${new Date().getTime()}`}
+                                    <img src={`${getImageUrl(student.imageId)}`}
                                          alt={"child-avatar"} style={styles.kidImage}/>
                                     <span>{`${student.name} ${student.surname}`}</span>
                                 </div>
@@ -123,7 +124,7 @@ const ClassItem = ({classInfo}) => {
                             student.isMyChild === false &&
                             <div key={student.id} style={styles.studentItem}>
                                 <div style={styles.studentInfo}>
-                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${student.imageId}`}
+                                    <img src={getImageUrl(student.imageId)}
                                          alt={"child-avatar"} style={styles.kidImage}/>
                                     <span>{student.name}</span>
                                 </div>

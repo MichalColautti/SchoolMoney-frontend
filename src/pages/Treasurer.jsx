@@ -4,8 +4,10 @@ import TransactionTab from "../components/tabs/TransactionTab";
 import AccountingTab from "../components/tabs/AccountingTab";
 import FundraiserTab from "../components/tabs/FundraiserTabTreasurer";
 import MyClassesTab from "../components/tabs/MyClassesTab";
-import { useState } from "react";
+import { useEffect, useState } from 'react'
 import { useUserData } from "../contexts/UserDataContext";
+import { getAllClasses, getTransactions } from '../services/treasurer'
+import { useAuth } from '../contexts/AuthContext'
 
 const classesData = [
   {
@@ -52,52 +54,7 @@ const classesData = [
   },
 ];
 
-const transactionsData = [
-  {
-    id: "t1",
-    classInfo: {
-      name: "Klasa 4C",
-      year: "2024/2025",
-    },
-    fundraiser: {
-      name: "Wyjazd w góry",
-    },
-    transactionDate: "01.09.2025",
-    bookingDate: "02.09.2025",
-    amount: "250.00 zł",
-    status: "failed",
-    sender: {
-      name: "Anna Kowal ul. Słoneczna 12/4, 00-101 Warszawa",
-      account: "PL36 3221 8455 6609 7202 5870 7314",
-    },
-    recipient: {
-      account: "PL31 2012 4992 1040 2274 5140 2342",
-    },
-    paymentMethod: "blik",
-  },
-  {
-    id: "t2",
-    classInfo: {
-      name: "Klasa 1A",
-      year: "2023/2024",
-    },
-    fundraiser: {
-      name: "Wyjście do kina",
-    },
-    transactionDate: "30.08.2025",
-    bookingDate: "30.08.2025",
-    amount: "50.00 zł",
-    status: "success",
-    sender: {
-      name: "Jan Kowalski, ul. Słoneczna 12/4, 00-101 Warszawa",
-      account: "PL36 3221 8455 6609 7202 5870 7314",
-    },
-    recipient: {
-      account: "PL31 2012 4992 1040 2274 5140 2342",
-    },
-    paymentMethod: "przelew tradycyjny",
-  },
-];
+
 
 const accountingData = [
   {
@@ -274,8 +231,26 @@ Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, k
 
 const Treasurer = () => {
   const [activeTab, setActiveTab] = useState("myclasses");
-
+  const { token } = useAuth();
   const { user } = useUserData();
+
+  const [classes, setClasses] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    getAllClasses(token).then(
+      (data) => {
+        setClasses(data);
+      }
+    )
+
+    getTransactions(token).then(
+      (data) => {
+        setTransactions(data);
+      }
+    )
+
+  }, [token])
 
   return (
     <>
@@ -333,7 +308,7 @@ const Treasurer = () => {
           <FundraiserTab fundraisersData={fundraisersData} isTreasurer={true} />
         )}
         {activeTab === "transactions" && (
-          <TransactionTab transactionsData={transactionsData} />
+          <TransactionTab transactionsData={transactions} />
         )}
         {activeTab === "accountancy" && (
           <AccountingTab accountingData={accountingData} />

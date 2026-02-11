@@ -1,4 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
+import { payForFundraising } from "../../services/parent";
+import { AuthContext } from "../../contexts/AuthContext";
 import cancelIcon from "../../assets/cancel.svg";
 import TrashcanIcon from "../../assets/trashcan.svg";
 import UploadFileIcon from "../../assets/upload.svg";
@@ -14,6 +16,7 @@ const getBadgeStyle = (type) => {
 };
 
 const FundraiserItem = ({ fundraiser, isTreasurer }) => {
+  const { token } = useContext(AuthContext);
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
   const [activeTab, setActiveTab] = useState("my");
@@ -49,10 +52,15 @@ const FundraiserItem = ({ fundraiser, isTreasurer }) => {
     setIsPaymentModalOpen(true);
   };
 
-  const handlePaymentSubmit = () => {
-    // Tutaj logika wysłania płatności
-    setIsPaymentModalOpen(false);
-    setSelectedChild(null);
+  const handlePaymentSubmit = async () => {
+    try {
+      await payForFundraising(fundraiser.id, selectedChild.id, paymentAmount, token);
+      setIsPaymentModalOpen(false);
+      setSelectedChild(null);
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
   };
 
   return (

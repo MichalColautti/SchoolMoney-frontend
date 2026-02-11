@@ -1,16 +1,70 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import FundraiserItem from "./../items/FundraiserItemTreasurer.jsx";
 import CancelIcon from "../../assets/cancel.svg";
 import TrashcanIcon from "../../assets/trashcan.svg";
 import UploadFileIcon from "../../assets/upload.svg";
 import { useUserData } from "../../contexts/UserDataContext";
+import { getTreasurerFundraisings } from "../../services/treasurer";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
   const { user } = useUserData();
-  const [list, setList] = useState(initialData || []);
+  const { token } = useContext(AuthContext);
+  const [list, setList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef(null);
+
+  const treasurerClasses = user?.classes?.filter((c) => c.isTreasurer) || [];
+
+  const mapFundraiserDtoToDisplayItem = (dto) => {
+    const foundClass =
+      treasurerClasses.find((c) => `${c.name} ${c.year}` === dto.className) ||
+      treasurerClasses.find((c) => c.name === dto.className);
+
+    return {
+      id: dto.id,
+      title: dto.name,
+      classId: foundClass?.id || null,
+      className: dto.className,
+      goal: dto.className || "",
+      description: dto.description,
+      endDate: dto.endDate ? new Date(dto.endDate).toLocaleDateString("pl-PL") : "",
+      costPerChild: dto.amount,
+      organizer: dto.classTreasurerName || null,
+      imageUrl: "",
+      badges:
+        dto.status === "ACTIVE"
+          ? [{ text: "Aktywna", type: "green" }]
+          : [{ text: "Zakończona", type: "red" }],
+      children: dto.collectedAmounts
+        ? dto.collectedAmounts.map((ca) => ({
+            id: ca.child.id,
+            name: `${ca.child.name} ${ca.child.surname}`,
+            amountPaid: ca.amount,
+            imageId: ca.child.imageId, // Note: using child id as imageId placeholder? No, DTO has imageId
+          }))
+        : [],
+    };
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getTreasurerFundraisings(token);
+        if (data && Array.isArray(data)) {
+           const mapped = data.map(mapFundraiserDtoToDisplayItem);
+           setList(mapped);
+        }
+      } catch (error) {
+        console.error("Failed to fetch fundraisings:", error);
+      }
+    };
+
+    if (token) {
+        fetchData();
+    }
+  }, []);
 
   const emptyForm = {
     id: null,
@@ -27,12 +81,11 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
       { text: "Wpłacono", type: "blue" },
       { text: "Aktywna", type: "green" },
     ],
-    organizer: "Skarbnik",
+    organizer: "",
   };
 
   const [formData, setFormData] = useState(emptyForm);
 
-  const treasurerClasses = user?.classes?.filter((c) => c.isTreasurer) || [];
 
   const handleOpenEdit = (item) => {
     setIsEditing(true);
@@ -159,13 +212,14 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
                       gap: "10px",
                     }}
                   >
-                    <img
-                      src={
-                        formData.photo
-                          ? URL.createObjectURL(formData.photo)
-                          : formData.imageUrl
-                      }
-                      style={{
+                      <img
+                        src={
+                          formData.photo
+                            ? URL.createObjectURL(formData.photo)
+                            : formData.imageUrl
+                        }
+                        alt="preview"
+                        style={{
                         width: 50,
                         height: 40,
                         borderRadius: 6,
@@ -184,12 +238,12 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
                         setFormData({ ...formData, photo: null, imageUrl: "" });
                       }}
                     >
-                      <img src={TrashcanIcon} width="20" />
+                      <img src={TrashcanIcon} width="20" alt="delete" />
                     </button>
                   </div>
                 ) : (
                   <div style={{ textAlign: "center" }}>
-                    <img src={UploadFileIcon} width="32" />
+                    <img src={UploadFileIcon} width="32" alt="upload" />
                     <p
                       style={{
                         margin: "5px 0 0",

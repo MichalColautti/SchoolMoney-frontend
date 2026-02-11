@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { getImageUrl } from "../../services/image";
+import { returnPayment } from "../../services/treasurer";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const getBadgeStyle = (type, styles) => {
   if (type === "green") return styles.badgeGreen;
@@ -7,6 +10,7 @@ const getBadgeStyle = (type, styles) => {
 };
 
 const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
+  const { token } = useContext(AuthContext);
   // fundraiser.isExpandedDefault pozwala na otwarcie karty na starcie (jak w Twoim obiekcie)
   const [isExpanded, setIsExpanded] = useState(
     fundraiser.isExpandedDefault || false,
@@ -15,6 +19,7 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
   if (!fundraiser) return null;
 
   const {
+    id,
     title,
     badges = [],
     goal,
@@ -26,9 +31,17 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
     children = [],
   } = fundraiser;
 
-  const isActive = badges.some(
-    (b) => b.type === "green" && b.text === "Aktywna",
-  );
+  const handleReturnPayment = async (childId) => {
+    if (!window.confirm("Czy na pewno chcesz zwrócić pieniądze?")) return;
+    try {
+      await returnPayment(id, childId, token);
+      alert("Pieniądze zostały zwrócone");
+      window.location.reload(); // Simple way to refresh data
+    } catch (e) {
+      console.error(e);
+      alert("Wystąpił błąd podczas zwrotu środków");
+    }
+  };
 
   return (
     <div style={styles.card}>
@@ -85,20 +98,25 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
             <span>
               Koszt: <strong>{costPerChild} zł</strong>
             </span>
-            <span>
+            {organizer && ( <span>
               Skarbnik: <strong>{organizer}</strong>
-            </span>
+            </span>)}
+
           </div>
 
           {/* Sekcja dzieci */}
           <div style={styles.childrenSection}>
-            <h3 style={styles.childrenHeader}>Moje dzieci</h3>
+            <h3 style={styles.childrenHeader}>Dzieci</h3>
             {children.map((child) => {
               const isPaid = child.amountPaid >= costPerChild;
               return (
                 <div key={child.id} style={styles.childItem}>
                   <div style={styles.childInfo}>
-                    <div style={styles.avatar} />
+                    <img
+                      src={getImageUrl(child.imageId)}
+                      alt={child.name}
+                      style={styles.avatar}
+                    />
                     <span>{child.name}</span>
                     <span style={styles.childAmount}>
                       {child.amountPaid} / {costPerChild} zł
@@ -107,6 +125,7 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
                   <button
                     style={isPaid ? styles.buttonRed : styles.buttonDisabled}
                     disabled={!isPaid}
+                    onClick={() => handleReturnPayment(child.id)}
                   >
                     Zwróć pieniądze
                   </button>

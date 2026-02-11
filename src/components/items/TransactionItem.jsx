@@ -27,22 +27,21 @@ const TransactionItem = ({ transaction }) => {
 
   const statusProps = getStatusProps(transaction.status);
 
-  const { classInfo, fundraiser, transactionDate, amount } = transaction;
+  const { contributorName, childName, amount, fundraisingName, timestamp } =
+    transaction;
 
   return (
     <div style={styles.transactionItem}>
       <div style={styles.transactionHeader} onClick={toggleExpand}>
         <div style={styles.transactionInfo}>
           <div style={styles.iconDiv} />
-          <span style={styles.classInfo}>
-            {classInfo.name} {classInfo.year}
-          </span>
+          <span style={styles.classInfo}>PLACEHOLDER</span>
           <div style={styles.fundraiserIcon} />
-          <span style={styles.text}>{fundraiser.name}</span>
+          <span style={styles.text}>{fundraisingName}</span>
 
           {!isExpanded && (
             <>
-              <span style={styles.text}>{transactionDate}</span>
+              <span style={styles.text}>{timestamp}</span>
               <span style={styles.amount}>{amount}</span>
             </>
           )}
@@ -57,7 +56,7 @@ const TransactionItem = ({ transaction }) => {
         <div style={styles.expandedContent}>
           <TransactionDetails
             details={transaction}
-            fundraiserName={transaction.fundraiser.name}
+            fundraiserName={fundraisingName}
           />
         </div>
       )}

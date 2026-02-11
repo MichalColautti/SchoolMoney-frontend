@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import ChatDetail from "./chatDetail";
 import SearchIcon from "../../assets/search.svg";
-import AddChatIcon from "../../assets/addChat.svg";
 import {useAuth} from "../../contexts/AuthContext";
+import {useUserData} from "../../contexts/UserDataContext";
 import { getChatChannels, createChat } from "../../services/chat";
 import { findParent,  } from "../../services/parent";
 import { useFormatDate } from '../../hooks/useFormatDate'
 import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client/dist/sockjs";
+import { getImageUrl } from '../../services/image'
 
 const ChatSidebar = ({ onClose }) => {
-  const { token, user } = useAuth();
+  const { token } = useAuth();
+  const { user } = useUserData();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [foundParents, setFoundParents] = useState([]);
@@ -181,7 +183,7 @@ const ChatSidebar = ({ onClose }) => {
                           >
                                 {parent.imageId ? (
                                     <img
-                                        src={`${REACT_APP_API_BASE_URL}/image/get/${parent.imageId}`}
+                                        src={getImageUrl(parent.imageId)}
                                         alt={parent.name}
                                         style={styles.chatAvatar}
                                     />
@@ -204,7 +206,7 @@ const ChatSidebar = ({ onClose }) => {
                 >
                     {chat.imageId ? (
                         <img
-                            src={`${REACT_APP_API_BASE_URL}/image/get/${chat.imageId}`}
+                            src={getImageUrl(chat.imageId)}
                             alt={chat.name}
                             style={styles.chatAvatar}
                         />
@@ -337,4 +339,3 @@ const styles = {
 };
 
 export default ChatSidebar;
-

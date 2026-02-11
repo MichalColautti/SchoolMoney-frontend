@@ -4,6 +4,7 @@ import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
 import {deleteChildFromClass} from "../../services/treasurer";
 import {useAuth} from "../../contexts/AuthContext";
 import {useUserData} from "../../contexts/UserDataContext";
+import { getImageUrl } from '../../services/image'
 
 const MyClassItem = ({classInfo}) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -32,7 +33,7 @@ const MyClassItem = ({classInfo}) => {
             {/* Header */}
             <div style={styles.classHeader} onClick={toggleExpand}>
                 <div style={styles.classInfo}>
-                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${imageId}?t=${new Date().getTime()}`}
+                    <img src={`${getImageUrl(imageId)}`}
                          style={styles.classIcon} alt={"class-img"}/>
                     <div style={styles.className}>{name}</div>
                     <div style={styles.classYear}>{year}</div>
@@ -91,7 +92,7 @@ const MyClassItem = ({classInfo}) => {
                             <div key={student.id} style={styles.studentItem}>
                                 <div style={styles.studentInfo}>
                                     <img
-                                        src={`${REACT_APP_API_BASE_URL}/image/get/${student.imageId}?t=${new Date().getTime()}`}
+                                        src={`${getImageUrl(student.imageId)}`}
                                         style={styles.studentAvatar} alt={"class-img"}/>
                                     <span>{`${student.name} ${student.surname}`}</span>
                                 </div>

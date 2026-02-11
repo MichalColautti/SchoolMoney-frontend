@@ -21,10 +21,7 @@ const TransactionDetails = ({ details, fundraiserName }) => {
         </span>
       </div>
       <div style={styles.detailRow}>
-        <strong>Data operacji:</strong> {details.transactionDate}
-      </div>
-      <div style={styles.detailRow}>
-        <strong>Data księgowania:</strong> {details.bookingDate}
+        <strong>Data operacji:</strong> {details.timestamp}
       </div>
       <div style={styles.detailRow}>
         <strong>Status:</strong> <span style={status.style}>{status.text}</span>
@@ -34,16 +31,10 @@ const TransactionDetails = ({ details, fundraiserName }) => {
       </div>
       <div style={styles.separator} />
       <div style={styles.detailRow}>
-        <strong>Konto nadawcy:</strong> {details.sender.account}
+        <strong>Dziecko:</strong> {details.childName}
       </div>
       <div style={styles.detailRow}>
-        <strong>Dane nadawcy:</strong> {details.sender.name}
-      </div>
-      <div style={styles.detailRow}>
-        <strong>Konto odbiorcy:</strong> {details.recipient.account}
-      </div>
-      <div style={styles.detailRow}>
-        <strong>Metoda płatności:</strong> {details.paymentMethod}
+        <strong>Dane nadawcy:</strong> {details.contributorName}
       </div>
       <div style={styles.separator} />
       <button

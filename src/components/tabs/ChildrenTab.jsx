@@ -9,9 +9,9 @@ import {addChild, addChildById, deleteChild, editChild} from "../../services/par
 
 import {useAuth} from "../../contexts/AuthContext";
 import {validateAddExistingChild} from "../../scripts/validate/validateAddExistingChild";
-import {REACT_APP_API_BASE_URL} from "../../services/utils/request";
 import {useUserData} from "../../contexts/UserDataContext";
 import {validateEditChild} from "../../scripts/validate/utils/validateEditChild";
+import { getImageUrl } from '../../services/image'
 
 const ChildrenTab = () => {
     const [isAddKidModalOpen, setIsAddKidModalOpen] = useState(false);
@@ -183,7 +183,7 @@ const ChildrenTab = () => {
                         user && user.children && user.children.map((child) => (
                             <tr key={child.id} style={{height: 48}}>
                                 <td>
-                                    <img src={`${REACT_APP_API_BASE_URL}/image/get/${child.imageId}?t=${new Date().getTime()}`} alt={"child-avatar"} style={styles.avatar}/>
+                                    <img src={`${getImageUrl(child.imageId)}`} alt={"child-avatar"} style={styles.avatar}/>
                                 </td>
                                 <td>{`${child.name} ${child.surname}`}</td>
                                 <td>{child.className !== null ? child.className : "Nie przypisany"}</td>

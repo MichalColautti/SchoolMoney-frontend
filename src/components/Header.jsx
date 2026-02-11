@@ -6,18 +6,21 @@ import ChatSidebar from "./chat/chatSidebar";
 import ChatIcon from "./../assets/chat.svg";
 import CoinIcon from "./../assets/coin.svg";
 import ExitIcon from "./../assets/exit.svg";
+import { useUserData } from '../contexts/UserDataContext'
 import cancelIcon from "../assets/cancel.svg";
 
 const Header = () => {
-  const { logout } = useAuth();
+  const { logout, token } = useAuth();
+  const { user, addMoney } = useUserData()
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAddFundsModalOpen, setIsAddFundsModalOpen] = useState(false);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
 
   const toggleChat = () => setIsChatOpen(!isChatOpen);
   const handleAddFunds = () => {
     setIsAddFundsModalOpen(false);
-    setAmount("");
+    addMoney(amount, token)
+    setAmount(0);
   };
 
   return (
@@ -64,7 +67,7 @@ const Header = () => {
               height="16"
               style={{ marginRight: "8px" }}
             />
-            432,32 zł
+            {user.wallet} zł
           </button>
 
           <button style={styles.button} onClick={logout}>
