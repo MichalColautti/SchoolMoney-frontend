@@ -34,7 +34,7 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
       organizer: dto.classTreasurerName || null,
       imageUrl: "",
       badges:
-        dto.status === "ACTIVE"
+        dto.status === "active"
           ? [{ text: "Aktywna", type: "green" }]
           : [{ text: "Zakończona", type: "red" }],
       children: dto.collectedAmounts

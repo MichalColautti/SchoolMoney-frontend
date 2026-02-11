@@ -1,9 +1,11 @@
 const TransactionDetails = ({ details, fundraiserName }) => {
   const getStatusProps = (status) => {
     switch (status) {
-      case "failed":
+      case "cancelled":
         return { text: "Nieudana", style: { color: "#DC2626" } };
-      case "success":
+      case "refunded":
+        return { text: "Zwrócona", style: { color: "#595959" } };
+      case "accepted":
         return { text: "Udana", style: { color: "#1A844D" } };
       default:
         return { text: "Oczekująca", style: { color: "#B45309" } };
