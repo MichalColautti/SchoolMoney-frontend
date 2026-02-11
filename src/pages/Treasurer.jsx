@@ -191,7 +191,7 @@ const accountingData = [
 const fundraisersData = [
   {
     id: "f1",
-    title: "Wyjazd w góry",
+    name: "Wyjazd w góry",
     goal: "Cel: zbieramy na klasowy wyjazd w góry, żeby spędzić razem niezapomniany czas, oderwać się od ekranów i przeżyć prawdziwą przygodę w naturze! Chcemy zdobyć szczyty, zobaczyć wschód słońca i po prostu dobrze się bawić razem.",
     imageUrl:
       "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80",
@@ -205,7 +205,7 @@ Chcemy, żeby nikt nie został w domu tylko dlatego, że nie mógł sobie pozwol
 Dlaczego góry?
 Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, kto jest najlepszy z matmy czy polskiego, tylko to, że razem pomagamy sobie wejść na szczyt. To nie tylko wyjazd, to lekcja przyjaźni, współdziałania i odpowiedzialności.`,
     endDate: "12.10.2025",
-    costPerChild: 250,
+    amount: 250,
     organizer: "Kamil Kowalski",
     isExpandedDefault: true,
     badges: [

@@ -20,13 +20,13 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
 
   const {
     id,
-    title,
+    name,
     badges = [],
     goal,
     imageUrl,
     description,
     endDate,
-    costPerChild,
+    amount,
     organizer,
     children = [],
   } = fundraiser;
@@ -49,7 +49,7 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
       <div style={styles.header} onClick={() => setIsExpanded(!isExpanded)}>
         <div style={styles.headerInfo}>
           <div style={styles.iconDiv} />
-          <span style={styles.title}>{title}</span>
+          <span style={styles.title}>{name}</span>
         </div>
 
         <div style={styles.headerActions}>
@@ -78,7 +78,7 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
         <div style={styles.body}>
           <p style={styles.goal}>{goal}</p>
 
-          {imageUrl && <img src={imageUrl} alt={title} style={styles.image} />}
+          {imageUrl && <img src={imageUrl} alt={name} style={styles.image} />}
 
           {description && (
             <p style={styles.description}>
@@ -96,7 +96,7 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
               Planowane zakończenie zbiórki: <strong>{endDate}</strong>
             </span>
             <span>
-              Koszt: <strong>{costPerChild} zł</strong>
+              Koszt: <strong>{amount} zł</strong>
             </span>
             {organizer && ( <span>
               Skarbnik: <strong>{organizer}</strong>
@@ -108,7 +108,7 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
           <div style={styles.childrenSection}>
             <h3 style={styles.childrenHeader}>Dzieci</h3>
             {children.map((child) => {
-              const isPaid = child.amountPaid >= costPerChild;
+              const isPaid = child.amountPaid >= amount;
               return (
                 <div key={child.id} style={styles.childItem}>
                   <div style={styles.childInfo}>
@@ -119,7 +119,7 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
                     />
                     <span>{child.name}</span>
                     <span style={styles.childAmount}>
-                      {child.amountPaid} / {costPerChild} zł
+                      {child.amountPaid} / {amount} zł
                     </span>
                   </div>
                   <button

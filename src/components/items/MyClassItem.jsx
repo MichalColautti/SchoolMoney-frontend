@@ -230,7 +230,6 @@ const styles = {
         width: 32,
         height: 32,
         borderRadius: "16px",
-        background: "#6c8aefff",
     },
     deleteIcon: {
         cursor: "pointer",

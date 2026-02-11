@@ -4,7 +4,7 @@ import CancelIcon from "../../assets/cancel.svg";
 import TrashcanIcon from "../../assets/trashcan.svg";
 import UploadFileIcon from "../../assets/upload.svg";
 import { useUserData } from "../../contexts/UserDataContext";
-import { getTreasurerFundraisings } from "../../services/treasurer";
+import {addFundraising, getTreasurerFundraisings} from "../../services/treasurer";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
@@ -24,13 +24,13 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
 
     return {
       id: dto.id,
-      title: dto.name,
+      name: dto.name,
       classId: foundClass?.id || null,
       className: dto.className,
       goal: dto.className || "",
       description: dto.description,
       endDate: dto.endDate ? new Date(dto.endDate).toLocaleDateString("pl-PL") : "",
-      costPerChild: dto.amount,
+      amount: dto.amount,
       organizer: dto.classTreasurerName || null,
       imageUrl: "",
       badges:
@@ -67,21 +67,12 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
   }, []);
 
   const emptyForm = {
-    id: null,
-    title: "",
+    name: "",
     classId: "",
-    goal: "",
     description: "",
     endDate: "",
-    costPerChild: "",
+    amount: "",
     photo: null,
-    imageUrl: "",
-    children: [],
-    badges: [
-      { text: "Wpłacono", type: "blue" },
-      { text: "Aktywna", type: "green" },
-    ],
-    organizer: "",
   };
 
   const [formData, setFormData] = useState(emptyForm);
@@ -93,8 +84,8 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    if (!formData.title) return;
+  const handleSave = async () => {
+    if (!formData.name) return;
 
     const finalImageUrl = formData.photo
       ? URL.createObjectURL(formData.photo)
@@ -109,12 +100,9 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
         ),
       );
     } else {
-      const newItem = {
-        ...formData,
-        id: Date.now().toString(),
-        imageUrl: finalImageUrl,
-        isExpandedDefault: false,
-      };
+
+      const newItem = await addFundraising(formData, token);
+
       setList((prev) => [newItem, ...prev]);
     }
     closeModal();
@@ -160,9 +148,9 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
               <input
                 style={tabStyles.input}
                 placeholder="np. Wyjazd w góry"
-                value={formData.title}
+                value={formData.name}
                 onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
+                  setFormData({ ...formData, name: e.target.value })
                 }
               />
 
@@ -177,7 +165,6 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
                   setFormData({
                     ...formData,
                     classId: e.target.value,
-                    goal: selectedClass ? `${selectedClass.name} ${selectedClass.year}` : "",
                   });
                 }}
               >
@@ -235,7 +222,7 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
                       style={tabStyles.trash}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setFormData({ ...formData, photo: null, imageUrl: "" });
+                        setFormData({ ...formData, photo: null});
                       }}
                     >
                       <img src={TrashcanIcon} width="20" alt="delete" />
@@ -287,9 +274,9 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
                     type="number"
                     placeholder="250"
                     style={tabStyles.input}
-                    value={formData.costPerChild}
+                    value={formData.amount}
                     onChange={(e) =>
-                      setFormData({ ...formData, costPerChild: e.target.value })
+                      setFormData({ ...formData, amount: e.target.value })
                     }
                   />
                 </div>
