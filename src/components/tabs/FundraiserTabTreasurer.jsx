@@ -7,7 +7,7 @@ import { useUserData } from "../../contexts/UserDataContext";
 import {addFundraising, getTreasurerFundraisings} from "../../services/treasurer";
 import { AuthContext } from "../../contexts/AuthContext";
 
-const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
+const FundraiserTabTreasurer = () => {
   const { user } = useUserData();
   const { token } = useContext(AuthContext);
   const [list, setList] = useState([]);
@@ -32,7 +32,7 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
       endDate: dto.endDate ? new Date(dto.endDate).toLocaleDateString("pl-PL") : "",
       amount: dto.amount,
       organizer: dto.classTreasurerName || null,
-      imageUrl: "",
+      imageId: dto.imageId || null,
       badges:
         dto.status === "active"
           ? [{ text: "Aktywna", type: "green" }]
@@ -102,6 +102,8 @@ const FundraiserTabTreasurer = ({ fundraisersData: initialData }) => {
     } else {
 
       const newItem = await addFundraising(formData, token);
+
+      console.log(newItem);
 
       setList((prev) => [newItem, ...prev]);
     }

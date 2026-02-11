@@ -23,13 +23,15 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
     name,
     badges = [],
     goal,
-    imageUrl,
+    imageId,
     description,
     endDate,
     amount,
     organizer,
     children = [],
   } = fundraiser;
+
+  console.log(fundraiser)
 
   const handleReturnPayment = async (childId) => {
     if (!window.confirm("Czy na pewno chcesz zwrócić pieniądze?")) return;
@@ -43,12 +45,14 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
     }
   };
 
+  console.log(`IMG: ${imageId}`);
+
   return (
     <div style={styles.card}>
       {/* Header */}
       <div style={styles.header} onClick={() => setIsExpanded(!isExpanded)}>
         <div style={styles.headerInfo}>
-          <div style={styles.iconDiv} />
+          <img style={styles.iconDiv} src={`${getImageUrl(imageId)}`} alt={"icon"}/>
           <span style={styles.title}>{name}</span>
         </div>
 
@@ -78,7 +82,7 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
         <div style={styles.body}>
           <p style={styles.goal}>{goal}</p>
 
-          {imageUrl && <img src={imageUrl} alt={name} style={styles.image} />}
+          {imageId && <img src={imageId} alt={name} style={styles.image} />}
 
           {description && (
             <p style={styles.description}>
@@ -164,7 +168,6 @@ const styles = {
     width: 40,
     height: 40,
     borderRadius: "16px",
-    background: "linear-gradient(135deg, #4789df 0%, #2B7FFF 100%)",
   },
   title: {
     fontWeight: "bold",
@@ -277,7 +280,6 @@ const styles = {
     width: 40,
     height: 40,
     borderRadius: "16px",
-    background: "#4789df",
   },
   childAmount: {
     fontSize: "14px",
