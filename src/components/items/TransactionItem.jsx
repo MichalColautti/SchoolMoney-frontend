@@ -27,7 +27,7 @@ const TransactionItem = ({ transaction }) => {
 
   const statusProps = getStatusProps(transaction.status);
 
-  const { contributorName, childName, amount, fundraisingName, timestamp } =
+  const {className, contributorName, childName, amount, fundraisingName, timestamp } =
     transaction;
 
   return (
@@ -35,7 +35,7 @@ const TransactionItem = ({ transaction }) => {
       <div style={styles.transactionHeader} onClick={toggleExpand}>
         <div style={styles.transactionInfo}>
           <div style={styles.iconDiv} />
-          <span style={styles.classInfo}>PLACEHOLDER</span>
+          <span style={styles.classInfo}>{className}</span>
           <div style={styles.fundraiserIcon} />
           <span style={styles.text}>{fundraisingName}</span>
 

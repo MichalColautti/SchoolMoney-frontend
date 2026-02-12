@@ -65,52 +65,7 @@ const classesData = [
   },
 ];
 
-const transactionsData = [
-  {
-    id: "t1",
-    classInfo: {
-      name: "Klasa 4C",
-      year: "2024/2025",
-    },
-    fundraiser: {
-      name: "Wyjazd w góry",
-    },
-    transactionDate: "01.09.2025",
-    bookingDate: "02.09.2025",
-    amount: "250.00 zł",
-    status: "failed",
-    sender: {
-      name: "Anna Kowal ul. Słoneczna 12/4, 00-101 Warszawa",
-      account: "PL36 3221 8455 6609 7202 5870 7314",
-    },
-    recipient: {
-      account: "PL31 2012 4992 1040 2274 5140 2342",
-    },
-    paymentMethod: "blik",
-  },
-  {
-    id: "t2",
-    classInfo: {
-      name: "Klasa 1A",
-      year: "2023/2024",
-    },
-    fundraiser: {
-      name: "Wyjście do kina",
-    },
-    transactionDate: "30.08.2025",
-    bookingDate: "30.08.2025",
-    amount: "50.00 zł",
-    status: "success",
-    sender: {
-      name: "Jan Kowalski, ul. Słoneczna 12/4, 00-101 Warszawa",
-      account: "PL36 3221 8455 6609 7202 5870 7314",
-    },
-    recipient: {
-      account: "PL31 2012 4992 1040 2274 5140 2342",
-    },
-    paymentMethod: "przelew tradycyjny",
-  },
-];
+
 
 const accountingData = [
   {
@@ -244,66 +199,7 @@ const accountingData = [
   },
 ];
 
-const fundraisersData = [
-  {
-    id: "f1",
-    name: "Wyjazd w góry",
-    goal: "Cel: zbieramy na klasowy wyjazd w góry, żeby spędzić razem niezapomniany czas, oderwać się od ekranów i przeżyć prawdziwą przygodę w naturze! Chcemy zdobyć szczyty, zobaczyć wschód słońca i po prostu dobrze się bawić razem.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80",
-    description: `Opis: Dlaczego zbieramy?
-Nasz cel to umożliwić wyjazd wszystkim uczniom z klasy, niezależnie od sytuacji finansowej. Zebrane środki przeznaczymy na:
-• transport (autokar),
-• noclegi w schronisku lub pensjonacie,
-• wyżywienie,
-• bilety wstępu i drobne atrakcje (np. park linowy, muzeum przyrodnicze).
-Chcemy, żeby nikt nie został w domu tylko dlatego, że nie mógł sobie pozwolić na wyjazd. Każda złotówka przybliża nas do wspólnego celu
-Dlaczego góry?
-Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, kto jest najlepszy z matmy czy polskiego, tylko to, że razem pomagamy sobie wejść na szczyt. To nie tylko wyjazd, to lekcja przyjaźni, współdziałania i odpowiedzialności.`,
-    endDate: "12.10.2025",
-    amount: 250,
-    organizer: "Kamil Kowalski",
-    isExpandedDefault: true,
-    badges: [
-      { text: "Wpłacono", type: "blue" },
-      { text: "Aktywna", type: "green" },
-    ],
-    children: [
-      {
-        id: "s9",
-        name: "Zofia Kowalska",
-        amountPaid: 200,
-        avatar: null,
-      },
-      {
-        id: "s1",
-        name: "Jan Kowalski",
-        amountPaid: 250,
-        avatar: null,
-      },
-    ],
-    otherChildren: [
-      {
-        id: "o1",
-        name: "Kasia Iksińska",
-        amountPaid: 80,
-        avatar: null,
-      },
-      {
-        id: "o2",
-        name: "Marek Nowak",
-        amountPaid: 250,
-        avatar: null,
-      },
-      {
-        id: "o3",
-        name: "Piotr Zieliński",
-        amountPaid: 0,
-        avatar: null,
-      },
-    ],
-  },
-];
+
 
 const Parent = () => {
   const [activeTab, setActiveTab] = useState("children");
@@ -378,10 +274,10 @@ const Parent = () => {
         {activeTab === "children" && <ChildrenTab kids={[]}/>}
         {activeTab === "classes" && <ClassesTab classesData={classesData} />}
         {activeTab === "fundraisers" && (
-          <FundraiserTab fundraisersData={fundraisersData} />
+          <FundraiserTab />
         )}
         {activeTab === "transactions" && (
-          <TransactionTab transactionsData={transactionsData} />
+          <TransactionTab />
         )}
         {activeTab === "accountancy" && (
           <AccountingTab accountingData={accountingData} />

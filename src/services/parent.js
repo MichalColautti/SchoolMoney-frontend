@@ -158,6 +158,24 @@ export const addToWallet = async (amount, token) => {
   });
 }
 
+export const getFundraisings = async (token) => {
+  return request("/parent/get-fundraisings", {
+    method: "GET",
+    headers: {
+      Authorization: token,
+    },
+  });
+};
+
+export const getTransactions = async (token) => {
+  return request("/parent/get-transactions", {
+    method: "GET",
+    headers: {
+      Authorization: token,
+    },
+  });
+};
+
 export const payForFundraising = async (fundraisingId, childId, amount, token) => {
   return request(`/parent/pay/${fundraisingId}/${childId}`, {
     method: "POST",
