@@ -72,7 +72,7 @@ const AccountingFundraiserItem = ({ fundraiserData }) => {
   });
   const fileInputRef = useRef(null);
 
-  const { fundraiser, documents, payouts } = fundraiserData;
+  const { name, documents} = fundraiserData;
 
   const toggleAddInvoiceModal = () => setIsAddInvoiceModalOpen(!isAddInvoiceModalOpen);
 
@@ -92,7 +92,7 @@ const AccountingFundraiserItem = ({ fundraiserData }) => {
       <div style={styles.subHeader} onClick={toggleExpand}>
         <div style={styles.headerInfo}>
           <div style={styles.fundraiserIcon} />
-          <span style={styles.text}>{fundraiser.name}</span>
+          <span style={styles.text}>{name}</span>
         </div>
         <div style={styles.headerActions}>
           <div style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</div>
@@ -108,13 +108,6 @@ const AccountingFundraiserItem = ({ fundraiserData }) => {
           <div style={styles.subComponentsList}>
             {documents.map((doc) => (
               <InvoiceItem key={doc.id} doc={doc} />
-            ))}
-            {payouts.map((payout) => (
-              <PayoutItem
-                key={payout.id}
-                payout={payout}
-                fundraiserName={fundraiser.name}
-              />
             ))}
           </div>
         </div>

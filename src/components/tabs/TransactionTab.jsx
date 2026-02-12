@@ -17,7 +17,7 @@ const TransactionsTab = () => {
              status: t.status ? t.status.toLowerCase() : "pending",
              contributorName: t.contributorName || "Nieznany",
              childName: t.childName || t.child?.name || "Nieznany",
-             amount: `${t.amount} zł`,
+             amount: `${t.amount} PLN`,
              fundraisingName: t.fundraising.name || "Zbiórka",
              timestamp: t.timestamp ? new Date(t.timestamp).toLocaleDateString("pl-PL") : "",
              className: t.fundraising.className

@@ -5,7 +5,7 @@ const AccountingItem = ({ classData }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
-  const { classInfo, fundraisers } = classData;
+  const { name, year, fundraisers } = classData;
 
   return (
     <div style={styles.card}>
@@ -13,8 +13,8 @@ const AccountingItem = ({ classData }) => {
       <div style={styles.header} onClick={toggleExpand}>
         <div style={styles.headerInfo}>
           <div style={styles.iconDiv} />
-          <span style={styles.classInfo}>{classInfo.name}</span>
-          <span style={styles.classInfo}>{classInfo.year}</span>
+          <span style={styles.classInfo}>{name}</span>
+          <span style={styles.classInfo}>{year}</span>
         </div>
         <div style={styles.headerActions}>
           <div style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</div>

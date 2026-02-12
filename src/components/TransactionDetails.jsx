@@ -1,3 +1,5 @@
+import {generateTransactionDocument} from "../scripts/generateTransactionDocument";
+
 const TransactionDetails = ({ details, fundraiserName }) => {
   const getStatusProps = (status) => {
     switch (status) {
@@ -11,6 +13,10 @@ const TransactionDetails = ({ details, fundraiserName }) => {
         return { text: "Oczekująca", style: { color: "#B45309" } };
     }
   };
+
+  const handleDownloadDocument = () => {
+      generateTransactionDocument(details);
+  }
 
   const status = getStatusProps(details.status);
 
@@ -45,6 +51,7 @@ const TransactionDetails = ({ details, fundraiserName }) => {
           marginLeft: "auto",
           display: "block",
         }}
+        onClick={handleDownloadDocument}
       >
         Pobierz
       </button>
