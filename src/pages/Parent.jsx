@@ -5,66 +5,9 @@ import ClassesTab from "../components/tabs/ClassesTab";
 import TransactionTab from "../components/tabs/TransactionTab";
 import AccountingTab from "../components/tabs/AccountingTab";
 import FundraiserTab from "../components/tabs/FundraiserTab";
-import { useState } from "react";
-import {useUserData} from "../contexts/UserDataContext";
-
-const classesData = [
-  {
-    id: "c1",
-    name: "Klasa 4C",
-    year: "2024/2025",
-    accessCode: "qwem,qwemqw,eqmw,ewqqweqnjweqwk",
-    fundraisers: [
-      {
-        id: "f1",
-        name: "Wyjazd w góry",
-        userPaymentStatus: "paid",
-        fundraiserStatus: "unactive",
-      },
-    ],
-    mychildren: [
-      {
-        id: "s1",
-        name: "Zofia Kowalska",
-      },
-    ],
-    students: [
-      { id: "s1", name: "Jan Kowalski" },
-      { id: "s2", name: "Jan Kowalski" },
-      { id: "s3", name: "Jan Kowalski" },
-      { id: "s4", name: "Jan Kowalski" },
-      { id: "s5", name: "Jan Kowalski" },
-      { id: "s6", name: "Jan Kowalski" },
-      { id: "s7", name: "Jan Kowalski" },
-      { id: "s8", name: "Jan Kowalski" },
-    ],
-  },
-  {
-    id: "c2",
-    name: "Klasa 1A",
-    year: "2023/2024",
-    accessCode: "asdasdmksaaksdasmd",
-    fundraisers: [
-      {
-        id: "f2",
-        name: "Wyjście do kina",
-        userPaymentStatus: "unpaid",
-        fundraiserStatus: "active",
-      },
-    ],
-    mychildren: [
-      {
-        id: "s2",
-        name: "Jan Kowalski",
-      },
-    ],
-    students: [
-      { id: "s9", name: "Zofia Nowak" },
-      { id: "s10", name: "Maciej Kowalski" },
-    ],
-  },
-];
-
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import { getParentStatus } from "../services/parent";
 
 
 const accountingData = [
@@ -203,8 +146,22 @@ const accountingData = [
 
 const Parent = () => {
   const [activeTab, setActiveTab] = useState("children");
+  const { token } = useContext(AuthContext);
+  const [stats, setStats] = useState({
+    numberOfChildren: 0,
+    numberOfFundraisings: 0,
+    numberOfTransactions: 0
+  });
 
-  const {user} = useUserData();
+  useEffect(() => {
+     if (token) {
+         getParentStatus(token)
+             .then(data => {
+                 if(data) setStats(data);
+             })
+             .catch(console.error);
+     }
+  }, [token]);
 
   return (
     <>
@@ -214,15 +171,15 @@ const Parent = () => {
         <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
           <Panel
               title="Moje dzieci"
-              value={user && user.children && user.children.length}
+              value={stats.numberOfChildren}
           />
           <Panel
               title="Aktywne zbiórki"
-              value="1"
+              value={stats.numberOfFundraisings}
           />
           <Panel
               title="Transakcje"
-              value="5"
+              value={stats.numberOfTransactions}
           />
         </div>
 
@@ -272,7 +229,7 @@ const Parent = () => {
 
         {/* Tabs content*/}
         {activeTab === "children" && <ChildrenTab kids={[]}/>}
-        {activeTab === "classes" && <ClassesTab classesData={classesData} />}
+        {activeTab === "classes" && <ClassesTab/>}
         {activeTab === "fundraisers" && (
           <FundraiserTab />
         )}

@@ -74,6 +74,15 @@ export const getTransactions = async (token) => {
     })
 }
 
+export const getTreasurerStatus = async (token) => {
+  return request("/treasurer/status", {
+      method: "GET",
+      headers: {
+          "Authorization": token
+      }
+  })
+}
+
 const convertDate = (dateStr) => {
     if (!dateStr || !dateStr.includes('.')) return dateStr;
     const [d, m, y] = dateStr.split('.');

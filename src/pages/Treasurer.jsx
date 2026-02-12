@@ -4,10 +4,10 @@ import TransactionTab from "../components/tabs/TransactionTab";
 import AccountingTab from "../components/tabs/AccountingTab";
 import FundraiserTab from "../components/tabs/FundraiserTabTreasurer";
 import MyClassesTab from "../components/tabs/MyClassesTab";
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { useUserData } from "../contexts/UserDataContext";
-import { getAllClasses, getTransactions } from '../services/treasurer'
-import { useAuth } from '../contexts/AuthContext'
+import { getAllClasses, getTransactions, getTreasurerStatus } from '../services/treasurer'
+import { AuthContext } from '../contexts/AuthContext'
 
 const classesData = [
   {
@@ -231,26 +231,23 @@ Bo góry uczą pokory, cierpliwości i współpracy. Na szlaku nie liczy się, k
 
 const Treasurer = () => {
   const [activeTab, setActiveTab] = useState("myclasses");
-  const { token } = useAuth();
+  const { token } = useContext(AuthContext);
   const { user } = useUserData();
 
-  const [classes, setClasses] = useState([]);
-  const [transactions, setTransactions] = useState([]);
+  const [stats, setStats] = useState({
+        numberOfClasses: 0,
+        numberOfFundraisings: 0,
+        numberOfTransactions: 0
+  });
 
   useEffect(() => {
-    getAllClasses(token).then(
-      (data) => {
-        setClasses(data);
-      }
-    )
+    if(token){
+        getTreasurerStatus(token).then(data => {
+            if(data) setStats(data);
+        }).catch(err => console.error(err))
+    }
+  }, [token]);
 
-    getTransactions(token).then(
-      (data) => {
-        setTransactions(data);
-      }
-    )
-
-  }, [token])
 
   return (
     <>
@@ -258,9 +255,9 @@ const Treasurer = () => {
       <div style={styles.container}>
         {/* Stats */}
         <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-          <Panel title="Moje klasy" value={user.classes.length} />
-          <Panel title="Aktywne zbiórki" value="1" />
-          <Panel title="Transakcje" value="5" />
+          <Panel title="Moje klasy" value={stats.numberOfClasses} />
+          <Panel title="Aktywne zbiórki" value={stats.numberOfFundraisings} />
+          <Panel title="Transakcje" value={stats.numberOfTransactions} />
         </div>
 
         {/* Nav */}
@@ -305,10 +302,10 @@ const Treasurer = () => {
           <MyClassesTab classesData={classesData} />
         )}
         {activeTab === "fundraisers" && (
-          <FundraiserTab fundraisersData={fundraisersData} isTreasurer={true} />
+          <FundraiserTab />
         )}
         {activeTab === "transactions" && (
-          <TransactionTab transactionsData={transactions} />
+          <TransactionTab />
         )}
         {activeTab === "accountancy" && (
           <AccountingTab accountingData={accountingData} />
