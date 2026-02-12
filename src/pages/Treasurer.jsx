@@ -6,7 +6,6 @@ import FundraiserTab from "../components/tabs/FundraiserTabTreasurer";
 import MyClassesTab from "../components/tabs/MyClassesTab";
 import {useEffect, useState} from 'react'
 import {useUserData} from "../contexts/UserDataContext";
-import {getAllClasses, getTransactions} from '../services/treasurer'
 import {useAuth} from '../contexts/AuthContext'
 
 const classesData = [
@@ -153,17 +152,7 @@ const Treasurer = () => {
         }).catch(err => console.error(err))
     }
   }, [token]);
-
-  return (
-    <>
-      <Header balance={432.32} />
-      <div style={styles.container}>
-        {/* Stats */}
-        <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-          <Panel title="Moje klasy" value={stats.numberOfClasses} />
-          <Panel title="Aktywne zbiórki" value={stats.numberOfFundraisings} />
-          <Panel title="Transakcje" value={stats.numberOfTransactions} />
-        </div>
+  
     return (
         <>
             <Header balance={432.32}/>
@@ -227,7 +216,7 @@ const Treasurer = () => {
         )}
       </div>
     </>
-  );
+  )
 };
 
 const styles = {
