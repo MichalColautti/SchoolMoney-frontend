@@ -55,6 +55,7 @@ const classesData = [
 ];
 
 
+
 const accountingData = [
     {
         id: "classId",
@@ -139,24 +140,30 @@ const Treasurer = () => {
     const {token} = useAuth();
     const {user} = useUserData();
 
-    const [classes, setClasses] = useState([]);
-    const [transactions, setTransactions] = useState([]);
+  const [stats, setStats] = useState({
+        numberOfClasses: 0,
+        numberOfFundraisings: 0,
+        numberOfTransactions: 0
+  });
 
-    useEffect(() => {
-        getAllClasses(token).then(
-            (data) => {
-                setClasses(data);
-            }
-        )
+  useEffect(() => {
+    if(token){
+        getTreasurerStatus(token).then(data => {
+            if(data) setStats(data);
+        }).catch(err => console.error(err))
+    }
+  }, [token]);
 
-        getTransactions(token).then(
-            (data) => {
-                setTransactions(data);
-            }
-        )
-
-    }, [token])
-
+  return (
+    <>
+      <Header balance={432.32} />
+      <div style={styles.container}>
+        {/* Stats */}
+        <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
+          <Panel title="Moje klasy" value={stats.numberOfClasses} />
+          <Panel title="Aktywne zbiórki" value={stats.numberOfFundraisings} />
+          <Panel title="Transakcje" value={stats.numberOfTransactions} />
+        </div>
     return (
         <>
             <Header balance={432.32}/>
@@ -205,22 +212,22 @@ const Treasurer = () => {
           </span>
                 </nav>
 
-                {/* Tabs content*/}
-                {activeTab === "myclasses" && (
-                    <MyClassesTab classesData={classesData}/>
-                )}
-                {activeTab === "fundraisers" && (
-                    <FundraiserTab fundraisersData={fundraisersData} isTreasurer={true}/>
-                )}
-                {activeTab === "transactions" && (
-                    <TransactionTab transactionsData={transactions}/>
-                )}
-                {activeTab === "accountancy" && (
-                    <AccountingTab accountingData={accountingData}/>
-                )}
-            </div>
-        </>
-    );
+        {/* Tabs content*/}
+        {activeTab === "myclasses" && (
+          <MyClassesTab classesData={classesData} />
+        )}
+        {activeTab === "fundraisers" && (
+          <FundraiserTab />
+        )}
+        {activeTab === "transactions" && (
+          <TransactionTab />
+        )}
+        {activeTab === "accountancy" && (
+          <AccountingTab accountingData={accountingData} />
+        )}
+      </div>
+    </>
+  );
 };
 
 const styles = {

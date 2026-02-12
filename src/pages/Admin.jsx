@@ -50,7 +50,7 @@ const Admin = () => {
                     studentsCount: c.childrenCount,
                     treasurerName: c.classTreasurerName,
                     uid: c.id,
-                    status: c.blocked ? "Aktywna" : "Zablokowana",
+                    status: c.blocked ? "Zablokowana" : "Aktywna",
                 }));
                 setClassesData(mappedClasses);
             })

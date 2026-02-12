@@ -176,6 +176,15 @@ export const getTransactions = async (token) => {
   });
 };
 
+export const getParentStatus = async (token) => {
+  return request("/parent/status", {
+    method: "GET",
+    headers: {
+      Authorization: token,
+    },
+  });
+};
+
 export const payForFundraising = async (fundraisingId, childId, amount, token) => {
   return request(`/parent/pay/${fundraisingId}/${childId}`, {
     method: "POST",
