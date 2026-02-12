@@ -31,8 +31,6 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
     children = [],
   } = fundraiser;
 
-  console.log(fundraiser)
-
   const handleReturnPayment = async (childId) => {
     if (!window.confirm("Czy na pewno chcesz zwrócić pieniądze?")) return;
     try {

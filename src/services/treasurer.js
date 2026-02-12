@@ -38,6 +38,15 @@ export const deleteChildFromClass = async (classId, childId, token) => {
     })
 }
 
+export const getFundraisers = async (token) => {
+    return await request("/treasurer/get-fundraisings", {
+        method: "GET",
+        headers: {
+            "Authorization": token
+        }
+    })
+}
+
 export const getAllClasses = async (token) => {
     return request("/treasurer/get-classes", {
         method: "GET",
@@ -74,12 +83,6 @@ export const getTransactions = async (token) => {
     })
 }
 
-const convertDate = (dateStr) => {
-    if (!dateStr || !dateStr.includes('.')) return dateStr;
-    const [d, m, y] = dateStr.split('.');
-    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-};
-
 export async function addFundraising(data, token) {
     console.log(data)
     try {
@@ -104,6 +107,42 @@ export async function addFundraising(data, token) {
         formData.append('file', data.photo);
 
         return request("/treasurer/add-fundraising", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Authorization": token
+            }
+        })
+    } catch (err) {
+        throw err;
+    }
+}
+
+export async function editFundraising(data, token) {
+    console.log(data)
+    try {
+        const formData = new FormData();
+
+        const [day, month, year] = data.endDate.split('.').map(Number);
+
+        const endDateObject = new Date(year, month - 1, day);
+
+        const addFundraisingDto = {
+            fundraisingID: data.id,
+            name: data.name,
+            description: data.description,
+            endDate: endDateObject,
+            amount: Number(data.amount),
+            classId: data.classId,
+        }
+
+        formData.append('dto', new Blob([JSON.stringify(addFundraisingDto)], {
+            type: 'application/json'
+        }));
+
+        if(data.photo) formData.append('file', data.photo);
+
+        return request("/treasurer/edit-fundraising", {
             method: "POST",
             body: formData,
             headers: {
