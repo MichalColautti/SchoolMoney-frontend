@@ -5,10 +5,9 @@ import UploadFileIcon from "../../assets/upload.svg";
 import {useOnChange} from "../../hooks/useOnChange";
 import {emptyChildDataErrors, validateAddChild} from "../../scripts/validate/validateAddChild";
 import {useFormatDate} from "../../hooks/useFormatDate";
-import {addChild, addChildById, deleteChild, editChild} from "../../services/parent";
+import {addChild, deleteChild, editChild} from "../../services/parent";
 
 import {useAuth} from "../../contexts/AuthContext";
-import {validateAddExistingChild} from "../../scripts/validate/validateAddExistingChild";
 import {useUserData} from "../../contexts/UserDataContext";
 import {validateEditChild} from "../../scripts/validate/utils/validateEditChild";
 import { getImageUrl } from '../../services/image'
@@ -33,25 +32,10 @@ const ChildrenTab = () => {
     //Add new child Errors
     const [formErrors, setFormErrors] = useState(emptyChildDataErrors);
 
-    //Add existing kid window opened
-    const [isAddExistingKidModalOpen, setIsAddExistingKidModalOpen] = useState(false);
-
-    //Add existing kid id
-    const [childId, setChildId] = useState("");
-
-    //Add existing kid id error
-    const [existingKidError, setExistingKidError] = useState("");
-
     const fileInputRef = useRef(null);
     const dateInputRef = useRef(null);
 
     const toggleAddKidModal = () => setIsAddKidModalOpen(!isAddKidModalOpen);
-
-    const toggleAddExistingKidModal = () => {
-        setIsAddExistingKidModalOpen(!isAddExistingKidModalOpen);
-        setExistingKidError("");
-        setChildId("");
-    }
 
     const [isEditing, setIsEditing] = useState(false);
 
@@ -134,36 +118,6 @@ const ChildrenTab = () => {
         }
     }
 
-    const handleAddExistingChild = async () => {
-        if (!validateAddExistingChild(childId)) {
-            setExistingKidError("UID jest wymagane!");
-        }
-
-        try {
-            const response = await addChildById(childId, token);
-
-            onChangeUserData(response, 'children');
-
-            toggleAddExistingKidModal();
-
-            setChildId("")
-
-            setExistingKidError("")
-        } catch (err) {
-            switch (err.message) {
-                case "Parent already has this child in children list":
-                    setExistingKidError("Dziecko o tym identyfikatorze jest już przypisane!")
-                    break;
-                case "Child does not exist":
-                    setExistingKidError("Nie ma dziecka o podanym ID!")
-                    break;
-
-                case "Child already have both parents":
-                    setExistingKidError("Dziecko o tym ID, ma już przypisanych oboje rodziców!")
-            }
-        }
-    };
-
     return (
         <div>
             <div style={styles.container}>
@@ -206,9 +160,6 @@ const ChildrenTab = () => {
             <div style={styles.actionButtons}>
                 <button style={styles.button} onClick={toggleAddKidModal}>
                     Dodaj nowe dziecko
-                </button>
-                <button style={styles.button} onClick={toggleAddExistingKidModal}>
-                    Dodaj istniejące dziecko
                 </button>
             </div>
 
@@ -350,62 +301,6 @@ const ChildrenTab = () => {
                                 {
                                     isEditing ? "Zapisz zmiany" : "Dodaj dziecko"
                                 }
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Add existing kid */}
-            {isAddExistingKidModalOpen && (
-                <div style={styles.modalOverlay}>
-                    <div style={styles.modalWindow}>
-                        {/* Header */}
-                        <div style={styles.modalHeader}>
-                            <h3 style={styles.modalTitle}>
-                                Dodaj istniejące dziecko do konta
-                            </h3>
-                            <button
-                                style={styles.closeButton}
-                                onClick={toggleAddExistingKidModal}
-                            >
-                                <img src={`${CancelIcon}`} alt="cancel" width={24} height={24}/>
-                            </button>
-                        </div>
-
-                        {/* Body */}
-                        <div style={styles.modalBody}>
-                            <div style={styles.inputGroup}>
-                                <label style={styles.label}>
-                                    UID
-                                    <span style={{fontWeight: 400, color: "#aaa"}}>
-                    {" "}
-                                        (numer dziecka w systemie, widoczny na koncie innego
-                    rodzica)
-                  </span>
-                                </label>
-                                <input
-                                    type="text"
-                                    style={styles.input}
-                                    value={childId}
-                                    onChange={(e) => {
-                                        setChildId(e.target.value);
-                                        if (e.target.value) setExistingKidError("");
-                                    }}
-                                />
-                                {existingKidError && (
-                                    <span style={styles.errorText}>{existingKidError}</span>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div style={styles.modalFooter}>
-                            <button
-                                onClick={handleAddExistingChild}
-                                style={styles.submitButton}
-                            >
-                                Dodaj dziecko
                             </button>
                         </div>
                     </div>

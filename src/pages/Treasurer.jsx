@@ -7,6 +7,7 @@ import MyClassesTab from "../components/tabs/MyClassesTab";
 import {useEffect, useState} from 'react'
 import {useUserData} from "../contexts/UserDataContext";
 import {useAuth} from '../contexts/AuthContext'
+import {getTreasurerStatus} from "../services/treasurer";
 
 const classesData = [
     {
