@@ -67,7 +67,7 @@ export const getTreasurerFundraisings = async (token) => {
 
 export const returnPayment = async (fundraisingId, childId, token) => {
     return request(`/treasurer/return-payments/${fundraisingId}/${childId}`, {
-        method: "POST",
+        method: "GET",
         headers: {
             "Authorization": token
         }

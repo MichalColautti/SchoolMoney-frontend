@@ -1,16 +1,18 @@
 import { useEffect, useState, useContext } from "react";
 import TransactionItem from "../items/TransactionItem";
-import { getTransactions } from "../../services/parent";
+import { getTransactions as getParentTransactions } from "../../services/parent";
+import { getTransactions as getTreasurerTransactions } from "../../services/treasurer";
 import { AuthContext } from "../../contexts/AuthContext";
 
-const TransactionsTab = () => {
+const TransactionsTab = ({ isTreasurer = false }) => {
   const [list, setList] = useState([]);
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const data = await getTransactions(token);
+        const fetchFn = isTreasurer ? getTreasurerTransactions : getParentTransactions;
+        const data = await fetchFn(token);
         if (data && Array.isArray(data)) {
            const mappedCallback = (t) => ({
              id: t.id,
@@ -30,7 +32,7 @@ const TransactionsTab = () => {
     };
 
     if (token) fetchTransactions();
-  }, [token]);
+  }, [token, isTreasurer]);
 
   return (
     <div style={styles.listContainer}>

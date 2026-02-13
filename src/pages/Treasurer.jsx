@@ -97,7 +97,7 @@ const accountingData = [
 const Treasurer = () => {
     const [activeTab, setActiveTab] = useState("myclasses");
     const {token} = useAuth();
-    const {user} = useUserData();
+
 
   const [stats, setStats] = useState({
         numberOfClasses: 0,
@@ -119,9 +119,9 @@ const Treasurer = () => {
             <div style={styles.container}>
                 {/* Stats */}
                 <div style={{display: "flex", gap: "16px", marginBottom: "24px"}}>
-                    <Panel title="Moje klasy" value={user.classes.length}/>
-                    <Panel title="Aktywne zbiórki" value="1"/>
-                    <Panel title="Transakcje" value="5"/>
+                    <Panel title="Moje klasy" value={stats.numberOfClasses}/>
+                    <Panel title="Aktywne zbiórki" value={stats.numberOfFundraisings}/>
+                    <Panel title="Transakcje" value={stats.numberOfTransactions}/>
                 </div>
 
                 {/* Nav */}
@@ -169,7 +169,7 @@ const Treasurer = () => {
           <FundraiserTab />
         )}
         {activeTab === "transactions" && (
-          <TransactionTab />
+          <TransactionTab isTreasurer={true} />
         )}
         {activeTab === "accountancy" && (
           <AccountingTab accountingData={accountingData} />

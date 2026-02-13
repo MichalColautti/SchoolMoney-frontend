@@ -8,10 +8,15 @@ const getStatusProps = (status) => {
         text: "Nieudana",
         style: { ...styles.statusButton, ...styles.statusFailed },
       };
-    case "success":
+    case "accepted":
       return {
-        text: "Udany",
+        text: "Udana",
         style: { ...styles.statusButton, ...styles.statusSuccess },
+      };
+      case "refunded":
+      return {
+        text: "Zwrócona",
+        style: { ...styles.statusButton, ...styles.statusPending },
       };
     default:
       return {

@@ -28,6 +28,7 @@ const FundraiserItem = ({ fundraiser, isTreasurer }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
+  console.log(isTreasurer)
   const {
     title,
     badges,
@@ -174,9 +175,7 @@ const FundraiserItem = ({ fundraiser, isTreasurer }) => {
                       {child.amountPaid} / {costPerChild} zł
                     </span>
                   </div>
-                  {isPaid ? (
-                    <button style={styles.buttonRed}>Zwróć pieniądze</button>
-                  ) : (
+                  {!isPaid && (
                     <button style={styles.buttonBlueSmall} onClick={() => handleOpenPaymentModal(child)}>
                       Wpłać
                     </button>
