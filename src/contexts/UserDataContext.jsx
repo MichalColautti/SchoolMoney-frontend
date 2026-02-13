@@ -136,6 +136,13 @@ export const UserDataProvider = ({ children }) => {
     }).catch(console.error)
   }
 
+  const changeUserMoney = (amount) => {
+    setUser(prev => ({
+      ...prev,
+      wallet: parseFloat(prev.wallet) + parseFloat(amount)
+    }))
+  }
+
   const value = useMemo(
     () => ({
       user,
@@ -150,7 +157,8 @@ export const UserDataProvider = ({ children }) => {
       onEditChildInClass,
       onDeleteChild,
       onDeleteFromClass,
-      addMoney
+      addMoney,
+      changeUserMoney
     }),
     [user])
 

@@ -231,7 +231,7 @@ const Parent = () => {
         {activeTab === "children" && <ChildrenTab kids={[]}/>}
         {activeTab === "classes" && <ClassesTab/>}
         {activeTab === "fundraisers" && (
-          <FundraiserTab />
+          <FundraiserTab isTreasurer={false} />
         )}
         {activeTab === "transactions" && (
           <TransactionTab />

@@ -1,7 +1,8 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { getImageUrl } from "../../services/image";
 import { returnPayment } from "../../services/treasurer";
 import { AuthContext } from "../../contexts/AuthContext";
+import { useUserData } from '../../contexts/UserDataContext'
 
 const getBadgeStyle = (type, styles) => {
   if (type === "green") return styles.badgeGreen;
@@ -11,6 +12,7 @@ const getBadgeStyle = (type, styles) => {
 
 const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
   const { token } = useContext(AuthContext);
+  const { changeUserMoney } = useUserData()
   // fundraiser.isExpandedDefault pozwala na otwarcie karty na starcie (jak w Twoim obiekcie)
   const [isExpanded, setIsExpanded] = useState(
     fundraiser.isExpandedDefault || false,
@@ -28,15 +30,26 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
     endDate,
     amount,
     organizer,
-    children = [],
+    children: propChildren = [],
   } = fundraiser;
+
+  const [childrenList, setChildrenList] = useState(propChildren);
+
+  useEffect(() => {
+    setChildrenList(propChildren);
+  }, [propChildren]);
 
   const handleReturnPayment = async (childId) => {
     if (!window.confirm("Czy na pewno chcesz zwrócić pieniądze?")) return;
     try {
-      await returnPayment(id, childId, token);
+      const money = await returnPayment(id, childId, token);
+      changeUserMoney(money);
       alert("Pieniądze zostały zwrócone");
-      window.location.reload(); // Simple way to refresh data
+      setChildrenList((prev) =>
+        prev.map((child) =>
+          child.id === childId ? { ...child, amountPaid: 0 } : child
+        )
+      );
     } catch (e) {
       console.error(e);
       alert("Wystąpił błąd podczas zwrotu środków");
@@ -100,17 +113,13 @@ const FundraiserItemTreasurer = ({ fundraiser, onEdit }) => {
             <span>
               Koszt: <strong>{amount} zł</strong>
             </span>
-            {organizer && ( <span>
-              Skarbnik: <strong>{organizer}</strong>
-            </span>)}
-
           </div>
 
           {/* Sekcja dzieci */}
           <div style={styles.childrenSection}>
             <h3 style={styles.childrenHeader}>Dzieci</h3>
-            {children.map((child) => {
-              const isPaid = child.amountPaid >= amount;
+            {childrenList.map((child) => {
+              const isPaid = child.amountPaid > 0;
               return (
                 <div key={child.id} style={styles.childItem}>
                   <div style={styles.childInfo}>
