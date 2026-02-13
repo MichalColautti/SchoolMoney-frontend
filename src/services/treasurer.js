@@ -168,3 +168,32 @@ export async function editFundraising(data, token) {
         throw err;
     }
 }
+
+export const addDocument = async (data, token, fundraisingId) => {
+    const formData = new FormData();
+
+
+    const addDocumentDto = {
+        fundraisingId: fundraisingId,
+        number: data.number,
+        description: data.description,
+        date: data.date,
+        amount: Number(data.amount),
+    }
+
+    console.log(addDocumentDto);
+
+    formData.append('dto', new Blob([JSON.stringify(addDocumentDto)], {
+        type: 'application/json'
+    }));
+
+    if(data.file) formData.append('file', data.file);
+
+    return request("/document/upload", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "Authorization": token
+        }
+    })
+}

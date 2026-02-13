@@ -194,3 +194,12 @@ export const payForFundraising = async (fundraisingId, childId, amount, token) =
     body: JSON.stringify(amount),
   });
 };
+
+export const getAccountingData = async (token) => {
+    return request("/parent/get-accounting", {
+        method: "GET",
+        headers: {
+            Authorization: token,
+        }
+    })
+}

@@ -3,9 +3,17 @@ import TransactionDetails from "./../TransactionDetails";
 import cancelIcon from "../../assets/cancel.svg";
 import TrashcanIcon from "../../assets/trashcan.svg";
 import UploadFileIcon from "../../assets/upload.svg";
+import {addDocument} from "../../services/treasurer";
+import {useAuth} from "../../contexts/AuthContext";
+import {saveDocument} from "../../scripts/saveAccountingDocument";
 
 const InvoiceItem = ({ doc }) => {
   const isSettled = doc.status === "settled";
+
+  const downloadDocument = async () => {
+      await saveDocument(doc);
+  }
+
   return (
     <div style={styles.subCard}>
       <div style={styles.invoiceInfo}>
@@ -22,7 +30,7 @@ const InvoiceItem = ({ doc }) => {
         >
           {isSettled ? "Rozliczona" : "Nieopłacona"}
         </button>
-        <button style={styles.blueButton}>Pobierz</button>
+        <button style={styles.blueButton} onClick={downloadDocument}>Pobierz</button>
       </div>
     </div>
   );
@@ -59,7 +67,7 @@ const PayoutItem = ({ payout, fundraiserName }) => {
   );
 };
 
-const AccountingFundraiserItem = ({ fundraiserData }) => {
+const AccountingFundraiserItem = ({ fundraiserData, handleAddDocument }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
   const [isAddInvoiceModalOpen, setIsAddInvoiceModalOpen] = useState(false);
@@ -72,12 +80,15 @@ const AccountingFundraiserItem = ({ fundraiserData }) => {
   });
   const fileInputRef = useRef(null);
 
-  const { name, documents} = fundraiserData;
+  const { id, name, documents} = fundraiserData;
+
+  const {token} = useAuth();
 
   const toggleAddInvoiceModal = () => setIsAddInvoiceModalOpen(!isAddInvoiceModalOpen);
 
-  const handleAddInvoice = () => {
-    console.log("Invoice added:", invoiceData);
+  const handleAddInvoice = async () => {
+    const newDocument = await addDocument(invoiceData, token, id);
+    handleAddDocument(newDocument);
     toggleAddInvoiceModal();
     setInvoiceData({ number: "", date: "", amount: "", description: "", file: null });
   };
@@ -106,8 +117,8 @@ const AccountingFundraiserItem = ({ fundraiserData }) => {
             <button style={styles.blueButton} onClick={toggleAddInvoiceModal}>Dodaj fakturę</button>
           </div>
           <div style={styles.subComponentsList}>
-            {documents.map((doc) => (
-              <InvoiceItem key={doc.id} doc={doc} />
+            {documents.map((doc, index) => (
+              <InvoiceItem key={index} doc={doc} />
             ))}
           </div>
         </div>
